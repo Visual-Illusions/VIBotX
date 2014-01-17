@@ -17,43 +17,51 @@
  */
 package net.visualillusionsent.vibotx.command;
 
-import net.visualillusionsent.vibotx.MuteTracker;
+import net.visualillusionsent.vibotx.CommandParser;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 
 /**
- * Ok Thanks Command<br>
- * Un-Quites the {@link VIBotX} in a specified {@link org.pircbotx.Channel}<br>
- * <b>Usage:</b> .kthx<br>
+ * Help Command<br>
+ * Displays a list of commands and their usage<br>
+ * <b>Usage:</b> .help<br>
  * <b>Minimum Params:</b> 0<br>
- * <b>Maximum Params:</b> 0<br>
- * <b>Requires:</b> Op Channel<br>
+ * <b>Maximum Params:</b> 1<br>
+ * <b>Requires:</b> Channel<br>
  *
  * @author Jason (darkdiplomat)
  */
 @BotCommand(
-        main = "kthx",
+        main = "help",
         prefix = '.',
-        usage = ".kthx",
-        desc = "Un-Quites the Bot",
-        maxParam = 0,
-        op = true,
+        usage = ".help",
+        maxParam = 1,
+        desc = "Displays a list of commands and their usage",
         privateAllowed = false
 )
-public final class OkThanksCommand extends BaseCommand {
+public final class HelpCommand extends BaseCommand {
 
     /**
-     * Constructs a new {@code OkThanksCommand}
+     * Constructs a new {@code HelpCommand}
      */
-    public OkThanksCommand(VIBotX viBotX) {
+    public HelpCommand(VIBotX viBotX) {
         super(viBotX);
     }
 
     @Override
-    public final synchronized boolean execute(CommandEvent event) {
-        MuteTracker.unmuteBotIn(event.getChannel());
+    public final boolean execute(CommandEvent event) {
+        int pageStart = 1;
+        if (event.hasArguments()) {
+            try {
+                pageStart = Integer.parseInt(event.getArgument(0));
+            }
+            catch (NumberFormatException nfex) {
+
+            }
+        }
+        CommandParser.printHelp(event.getChannel(), event.getUser(), pageStart);
         return true;
     }
 }

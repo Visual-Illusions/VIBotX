@@ -1,7 +1,7 @@
 /*
  * This file is part of VIBotX.
  *
- * Copyright © 2014 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIBotX is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,7 +28,7 @@ import net.visualillusionsent.vibotx.api.command.CommandEvent;
  * <b>Usage:</b> .disconnect [message]<br/>
  * <b>Minimum Params:</b> 0<br/>
  * <b>Maximum Params:</b> &infin;<br/>
- * <b>Requires:</b> BotOwner<br/>
+ * <b>Requires:</b> Bot Operator<br/>
  *
  * @author Jason (darkdiplomat)
  */

@@ -1,7 +1,7 @@
 /*
  * This file is part of VIBotX.
  *
- * Copyright © 2014 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIBotX is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +24,7 @@ import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import net.visualillusionsent.vibotx.api.command.CommandExecutionException;
 import net.visualillusionsent.vibotx.api.command.ReturnStatus;
 import net.visualillusionsent.vibotx.api.plugin.Plugin;
+import net.visualillusionsent.vibotx.command.OkThanksCommand;
 import net.visualillusionsent.vibotx.configuration.BotOpsManager;
 import org.pircbotx.Channel;
 import org.pircbotx.User;
@@ -153,12 +154,12 @@ public final class CommandParser {
                 }
                 try {
                     if (event.getChannel() != null && MuteTracker.botMuteIn(event.getChannel())) {
-                        if (!BotOpsManager.isBotOp(user)) {
+                        if (!BotOpsManager.isBotOp(user) && !channel.isOp(user) && cmd.getClass() != OkThanksCommand.class) {
                             return FAILURE;
                         }
                     }
                     if (event.getChannel() != null && MuteTracker.userMuteIn(event.getUser(), event.getChannel())) {
-                        if (!BotOpsManager.isBotOp(user)) {
+                        if (!BotOpsManager.isBotOp(user) && !channel.isOp(user)) {
                             return FAILURE;
                         }
                     }
@@ -211,18 +212,20 @@ public final class CommandParser {
      * @param user
      *         the {@link User} calling for help
      */
-    public static final void printHelp(Channel channel, User user) {
+    public static final void printHelp(Channel channel, User user, int pageStart) {
         synchronized (lock) {
             user.send().notice("-- Help List for you in Channel: ".concat(channel.getName()).concat(" --"));
-            List<BaseCommand> triggered = new ArrayList<>();
-            for (BaseCommand cmd : instance.commands.values()) {
-                if (triggered.contains(cmd)) {
-                    continue;
-                }
-                else if (cmd.getAliases().length > 1) {
-                    triggered.add(cmd);
-                }
-
+            int pageMax = instance.commands.values().size() / 10;
+            pageMax = pageMax < 1 ? 1 : pageMax;
+            if (pageMax < pageStart) {
+                pageStart = 1;
+            }
+            int nPS = (pageStart - 1) * 10;
+            int nPSten = nPS + 10;
+            user.send().notice(String.format("-- Page %d of %d --", pageStart, pageMax));
+            List<BaseCommand> toDisplay = new ArrayList<>();
+            toDisplay.addAll(instance.commands.values());
+            for (BaseCommand cmd : toDisplay.subList(nPS, nPSten)) {
                 if (cmd.requiresVoice() && !channel.hasVoice(user)) {
                     continue;
                 }
@@ -234,6 +237,7 @@ public final class CommandParser {
                 }
 
                 user.send().notice(cmd.getUsage().concat(" - ").concat(cmd.getDescription()));
+                /*
                 if (cmd.getAliases().length > 1) {
                     StringBuilder builder = new StringBuilder();
                     for (String alias : cmd.getAliases()) {
@@ -242,6 +246,7 @@ public final class CommandParser {
                     }
                     user.send().notice("Aliases for ".concat(cmd.getName()).concat(": ").concat(builder.toString()));
                 }
+                */
             }
         }
     }

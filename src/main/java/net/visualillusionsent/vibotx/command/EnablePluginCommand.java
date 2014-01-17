@@ -1,7 +1,7 @@
 /*
  * This file is part of VIBotX.
  *
- * Copyright © 2014 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIBotX is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@ import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
  * <b>Usage:</b> .enableplugin {@literal <plugin>}<br>
  * <b>Minimum Params:</b> 1<br>
  * <b>Maximum Params:</b> 1<br>
- * <b>Requires:</b> Owner<br>
+ * <b>Requires:</b> Bot Operator<br/>
  *
  * @author Jason (darkdiplomat)
  */

@@ -1,7 +1,7 @@
 /*
  * This file is part of VIBotX.
  *
- * Copyright © 2014 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIBotX is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,7 @@ import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
+import net.visualillusionsent.vibotx.configuration.BotOpsManager;
 import org.pircbotx.User;
 
 /**
@@ -56,16 +57,16 @@ public final class IgnoreUserCommand extends BaseCommand {
     public final synchronized boolean execute(CommandEvent event) {
         if (event.getBot().getUserChannelDao().userExists(event.getArgument(0))) {
             User ignore = event.getBot().getUserChannelDao().getUser(event.getArgument(0));
-            if (event.getChannel().getUsers().contains(ignore)) {
+            if (!BotOpsManager.isBotOp(ignore) && event.getChannel().getUsers().contains(ignore)) {
                 MuteTracker.muteUserIn(ignore, event.getChannel());
                 event.respondNoticeToUser("Now ignoring " + event.getArgument(0));
             }
             else {
-                event.respondNoticeToUser("User is not in the channel...");
+                event.respondNoticeToUser("User is not in the channel or is a Bot Operator");
             }
         }
         else {
-            event.respondNoticeToUser("Could not find user...");
+            event.respondNoticeToUser("Could not find user");
         }
         return true;
     }
