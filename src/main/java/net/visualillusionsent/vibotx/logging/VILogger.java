@@ -38,30 +38,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import static net.visualillusionsent.vibotx.logging.Level.ACTION;
-import static net.visualillusionsent.vibotx.logging.Level.ALL;
-import static net.visualillusionsent.vibotx.logging.Level.CHANNELINFO;
-import static net.visualillusionsent.vibotx.logging.Level.COMMAND;
-import static net.visualillusionsent.vibotx.logging.Level.CONFIG;
-import static net.visualillusionsent.vibotx.logging.Level.CONNECT;
-import static net.visualillusionsent.vibotx.logging.Level.DEBUG;
-import static net.visualillusionsent.vibotx.logging.Level.DISCONNECT;
-import static net.visualillusionsent.vibotx.logging.Level.ERROR;
-import static net.visualillusionsent.vibotx.logging.Level.FINE;
-import static net.visualillusionsent.vibotx.logging.Level.FINER;
-import static net.visualillusionsent.vibotx.logging.Level.FINEST;
-import static net.visualillusionsent.vibotx.logging.Level.FINGER;
-import static net.visualillusionsent.vibotx.logging.Level.INFO;
-import static net.visualillusionsent.vibotx.logging.Level.INVITE;
-import static net.visualillusionsent.vibotx.logging.Level.JOIN;
-import static net.visualillusionsent.vibotx.logging.Level.KICK;
-import static net.visualillusionsent.vibotx.logging.Level.MESSAGE;
-import static net.visualillusionsent.vibotx.logging.Level.NOTICE;
-import static net.visualillusionsent.vibotx.logging.Level.PART;
-import static net.visualillusionsent.vibotx.logging.Level.PING;
-import static net.visualillusionsent.vibotx.logging.Level.PRIVATEMESSAGE;
-import static net.visualillusionsent.vibotx.logging.Level.SEVERE;
-import static net.visualillusionsent.vibotx.logging.Level.WARNING;
+import static net.visualillusionsent.vibotx.logging.Level.*;
 
 /**
  * @author Jason (darkdiplomat)
@@ -350,7 +327,7 @@ public final class VILogger extends Logger {
         /**
          * The {@link java.text.SimpleDateFormat} to use for logging
          */
-        private final SimpleDateFormat dateform = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        private final SimpleDateFormat dateForm = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         private final String loggerLevel = " [%s] [%s] ";
 
         /**
@@ -365,7 +342,7 @@ public final class VILogger extends Logger {
         public final String format(LogRecord rec) {
             StringBuilder message = new StringBuilder();
 
-            message.append(dateform.format(rec.getMillis()));
+            message.append(dateForm.format(rec.getMillis()));
             message.append(String.format(loggerLevel, rec.getLoggerName(), rec.getLevel().getName()));
             message.append(rec.getMessage());
             message.append(SystemUtils.LINE_SEP);
