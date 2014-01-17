@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>VIBotX</name>
+    <groupId>net.visualillusionsent</groupId>
+    <artifactId>vibotx</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jnks.build>0</jnks.build>
+        <viutils.version>1.2.1</viutils.version>
+        <pircbotx.version>2.0.1</pircbotx.version>
+        <devs>darkdiplomat</devs>
+    </properties>
+    <description>Visual Illusions IRC Bot</description>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License v3</name>
+            <url>http://www.gnu.org/licenses/lgpl.html</url>
+            <comments>
+                VIBotX is free software: you can redistribute it and/or modify
+                it under the terms of the GNU Lesser General Public License as published by
+                the Free Software Foundation, either version 3 of the License, or
+                (at your option) any later version.
+
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+                without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+                See the GNU Lesser General Public License for more details.
+            </comments>
+        </license>
+    </licenses>
+    <url>http://wiki.visualillusionsent.net/VIBotX</url>
+    <inceptionYear>2014</inceptionYear>
+    <organization>
+        <name>Visual Illusions Entertainment</name>
+        <url>http://visualillusionsent.net</url>
+    </organization>
+    <scm>
+        <url>https://github.com/Visual-Illusions/VIBotX</url>
+        <connection>GitHub</connection>
+        <developerConnection>scm:git:git@github.com:Visual-Illusions/VIBotX.git</developerConnection>
+    </scm>
+    <issueManagement>
+        <url>http://github.com/Visual-Illusions/VIBotX/issues</url>
+        <system>GitHub Issues Tracker</system>
+    </issueManagement>
+    <ciManagement>
+        <url>http://ci.visualillusionsent.net/job/VIBotX</url>
+        <system>Jenkins</system>
+    </ciManagement>
+    <distributionManagement>
+        <repository>
+            <id>vi-repo2</id>
+            <name>Visual Illusions Repository</name>
+            <url>http://repo2.visualillusionsent.net/repository/public/</url>
+        </repository>
+    </distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.pircbotx</groupId>
+            <artifactId>pircbotx</artifactId>
+            <version>${pircbotx.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.12.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.visualillusionsent</groupId>
+            <artifactId>viutils</artifactId>
+            <version>1.3.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.5</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>${project.name}-${project.version}</finalName>
+        <plugins>
+            <!-- Timestamp for year -->
+            <plugin>
+                <groupId>com.keyboardsamurais.maven</groupId>
+                <artifactId>maven-timestamp-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <propertyName>current.year</propertyName>
+                    <timestampPattern>yyyy</timestampPattern>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Compile plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <!-- Jar Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Title>${project.name}</Title>
+                            <Version>${project.version}</Version>
+                            <Jenkins-Build>${jnks.build}</Jenkins-Build>
+                            <Vendor>Visual Illusions Entertainment</Vendor>
+                            <Built-By>${user.name}</Built-By>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                            <Main-Class>net.visualillusionsent.vibotx.VIBotX</Main-Class>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- License Header -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <quiet>false</quiet>
+                    <encoding>UTF-8</encoding>
+                    <strictCheck>true</strictCheck>
+                    <header>${basedir}/HEADER.txt</header>
+                    <keywords>
+                        <keyword>${project.name}</keyword>
+                        <keyword>license</keyword>
+                    </keywords>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                    <properties>
+                        <years>${project.inceptionYear}<!-- -${current.year} unused at this time--></years>
+                    </properties>
+                    <includes>
+                        <include>src/main/java/**</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <!-- Update Config/Readme Files -->
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/**/*.cfg</include>
+                        <include>target/**/*.txt</include>
+                        <include>target/**/*.lang</include>
+                        <include>target/**/*.readme</include>
+                    </includes>
+                    <replacements>
+                        <replace>
+                            <token>{copyright.years}</token>
+                            <value>${project.inceptionYear}<!-- -${current.year} unused at this time--></value>
+                        </replace>
+                    </replacements>
+                    <regex>false</regex>
+                </configuration>
+            </plugin>
+            <!-- Need to shade in libraries -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.pircbotx:pircbotx</include>
+                                    <include>org.apache.commons:commons-lang3</include>
+                                    <include>org.slf4j:slf4j-api</include>
+                                    <include>org.slf4j:slf4j-nop</include>
+                                    <include>commons-codec:commons-codec</include>
+                                    <include>com.google.guava:guava</include>
+                                    <include>net.visualillusionsent:viutils</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <!-- Throw out all the unnecessary junk -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>**/*.txt</exclude>
+                                        <exclude>**/*.xml</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
+                                        <exclude>**/*.php</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>attach-sources-javadoc</id>
+            <build>
+                <plugins>
+                    <!-- Source plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- JavaDoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.7</version>
+                        <configuration>
+                            <linksource>true</linksource>
+                            <doctitle>${project.name} ${project.version}</doctitle>
+                            <header>Generated: ${maven.build.timestamp}</header>
+                            <footer>
+                                <![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]></footer>
+                            <links>
+                                <link>http://docs.visualillusionsent.net/VIUtils/${viutils.version}/</link>
+                                <link>http://site.pircbotx.googlecode.com/hg-history/${pircbotx.version}/apidocs/</link>
+                            </links>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
