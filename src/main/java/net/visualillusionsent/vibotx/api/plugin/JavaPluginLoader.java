@@ -28,6 +28,7 @@ import net.visualillusionsent.utils.JarUtils;
 import net.visualillusionsent.utils.PropertiesFile;
 import net.visualillusionsent.vibotx.CommandParser;
 import net.visualillusionsent.vibotx.VIBotX;
+import net.visualillusionsent.vibotx.api.events.EventHandler;
 import org.pircbotx.Colors;
 
 import java.io.File;
@@ -62,8 +63,6 @@ public final class JavaPluginLoader {
     private final Map<String, Manifest> pluginMF; // This is keyed to main class name
     private final PropertiesFile pluginCheck;
     private static final Object lock = new Object();
-    private static final Attributes.Name plugin_class_att = new Attributes.Name("Plugin-Class"),
-            plugin_name_att = new Attributes.Name("Plugin-Name");
 
     public JavaPluginLoader() {
         plugins = new ConcurrentHashMap<>();
@@ -120,12 +119,12 @@ public final class JavaPluginLoader {
             mf = JarUtils.getManifest(jar.getAbsolutePath());
             Attributes mainAtt = mf.getMainAttributes();
 
-            if (!mainAtt.containsKey(plugin_class_att)) {
+            if (!mainAtt.containsKey(PluginManifestAttributes.PLUGINCLASS.getValue())) {
                 log.error("Failed to read Plugin-Class for '" + jar.getName() + "'");
                 return null;
             }
 
-            if (!mainAtt.containsKey(plugin_name_att)) {
+            if (!mainAtt.containsKey(PluginManifestAttributes.PLUGINNAME.getValue())) {
                 log.error("Failed to read Plugin-Name for '" + jar.getName() + "'");
                 return null;
             }
@@ -188,8 +187,8 @@ public final class JavaPluginLoader {
                 log.error("Exception while loading class", ex);
                 return false;
             }
-            Class<?> pluginclass = loader.loadClass(mainClass);
-            JavaPlugin plugin = (JavaPlugin) pluginclass.newInstance();
+            Class<?> pluginClass = loader.loadClass(mainClass);
+            JavaPlugin plugin = (JavaPlugin) pluginClass.newInstance();
             synchronized (lock) {
                 this.plugins.put(name, plugin);
             }
@@ -267,8 +266,9 @@ public final class JavaPluginLoader {
             log.info("Enabled " + plugin.getName() + ", Version " + plugin.getVersion());
         }
         else {
-            // Clean Up commands
+            // Clean Up
             CommandParser.getInstance().removePluginCommands(plugin);
+            EventHandler.getInstance().unregisterPluginListeners(plugin);
         }
         return enabled;
     }
@@ -316,8 +316,9 @@ public final class JavaPluginLoader {
             log.error("An error occurred while disabling Plugin: " + plugin.getName(), thrown);
         }
 
-        // Clean Up commands
+        // Clean Up
         CommandParser.getInstance().removePluginCommands(plugin);
+        EventHandler.getInstance().unregisterPluginListeners(plugin);
 
         log.info("Disabled " + plugin.getName() + ", Version " + plugin.getVersion());
         return true;
@@ -401,7 +402,7 @@ public final class JavaPluginLoader {
      * @return String array of Plugin names
      */
     public final String[] getPluginList() {
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         String[] ret = new String[list.size()];
 
         synchronized (lock) {

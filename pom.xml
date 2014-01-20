@@ -13,6 +13,7 @@
         <viutils.version>1.2.1</viutils.version>
         <pircbotx.version>2.0.1</pircbotx.version>
         <devs>darkdiplomat</devs>
+        <status.url>http://status.visualillusionsent.net</status.url>
     </properties>
     <description>Visual Illusions IRC Bot</description>
     <licenses>
@@ -31,7 +32,7 @@
             </comments>
         </license>
     </licenses>
-    <url>http://wiki.visualillusionsent.net/VIBotX</url>
+    <url>http://wiki.visualillusionsent.net/view/VIBotX</url>
     <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Visual Illusions Entertainment</name>
@@ -43,7 +44,7 @@
         <developerConnection>scm:git:git@github.com:Visual-Illusions/VIBotX.git</developerConnection>
     </scm>
     <issueManagement>
-        <url>http://github.com/Visual-Illusions/VIBotX/issues</url>
+        <url>https://github.com/Visual-Illusions/VIBotX/issues</url>
         <system>GitHub Issues Tracker</system>
     </issueManagement>
     <ciManagement>
@@ -145,12 +146,16 @@
                             <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Title>${project.name}</Title>
+                            <Application-Name>${project.name}</Application-Name>
                             <Version>${project.version}</Version>
                             <Jenkins-Build>${jnks.build}</Jenkins-Build>
                             <Vendor>Visual Illusions Entertainment</Vendor>
                             <Built-By>${user.name}</Built-By>
                             <Build-Time>${maven.build.timestamp}</Build-Time>
+                            <Developers>${devs}</Developers>
+                            <Website-URL>${project.url}</Website-URL>
+                            <Status-URL>${status.url}</Status-URL>
+                            <Issues-URL>${project.issueManagement.url}</Issues-URL>
                             <Main-Class>net.visualillusionsent.vibotx.VIBotX</Main-Class>
                         </manifestEntries>
                     </archive>
@@ -289,7 +294,8 @@
                             <doctitle>${project.name} ${project.version}</doctitle>
                             <header>Generated: ${maven.build.timestamp}</header>
                             <footer>
-                                <![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]></footer>
+                                <![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]>
+                            </footer>
                             <links>
                                 <link>http://docs.visualillusionsent.net/VIUtils/${viutils.version}/</link>
                                 <link>http://site.pircbotx.googlecode.com/hg-history/${pircbotx.version}/apidocs/</link>

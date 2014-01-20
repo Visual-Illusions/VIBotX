@@ -33,7 +33,7 @@ public @interface BotCommand {
     /**
      * Special {@code null} value for aliases - DO NOT USE
      */
-    static final String NULL = "null.NULL#NULL throws null.NilException (WAT)";
+    static final String NULL = "null.NULL#NULL throws null.NullException (null.WAT)";
 
     /**
      * The prefix allowed for the command, default: !
@@ -66,7 +66,7 @@ public @interface BotCommand {
     int minParam() default 0;
 
     /**
-     * The maximum number of required parameteres
+     * The maximum number of required parameters
      */
     int maxParam() default Integer.MAX_VALUE;
 

@@ -46,8 +46,23 @@ import static net.visualillusionsent.vibotx.VIBotX.log;
  * @author Yariv Livay [CanaryLib]
  */
 public final class EventHandler {
+
     private final ConcurrentHashMap<Class<? extends Event>, ArrayList<RegisteredEventListener>> regListeners = new ConcurrentHashMap<>();
     private final String eherr = "Exception while passing Event: %s to EventListener: %s (Plugin: %s)";
+
+    /* Initialization on Demand Holder idiom */
+    // Private constructor prevents instantiation from other classes
+    private EventHandler() {
+    }
+
+    private static class EventHandlerHolder {
+        public static final EventHandler INSTANCE = new EventHandler();
+    }
+
+    public static EventHandler getInstance() {
+        return EventHandlerHolder.INSTANCE;
+    }
+    /* END */
 
     /**
      * Register a {@link EventListener} for a system hook

@@ -19,6 +19,7 @@ package net.visualillusionsent.vibotx.api.plugin;
 
 import net.visualillusionsent.utils.JarUtils;
 import net.visualillusionsent.vibotx.VIBotX;
+import net.visualillusionsent.vibotx.api.events.EventHandler;
 import net.visualillusionsent.vibotx.api.events.EventListener;
 import net.visualillusionsent.vibotx.api.events.EventMethodSignatureException;
 import net.visualillusionsent.vibotx.logging.VILogger;
@@ -90,7 +91,7 @@ public abstract class JavaPlugin implements Plugin {
     }
 
     public final void registerEventListener(EventListener listener) throws EventMethodSignatureException {
-        VIBotX.eventHandler.registerListener(listener, this);
+        EventHandler.getInstance().registerListener(listener, this);
     }
     /* END Convenience Methods */
 

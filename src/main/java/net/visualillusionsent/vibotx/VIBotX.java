@@ -18,17 +18,26 @@
 package net.visualillusionsent.vibotx;
 
 import net.visualillusionsent.utils.JarUtils;
-import net.visualillusionsent.vibotx.api.events.EventHandler;
+import net.visualillusionsent.utils.ProgramChecker;
 import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
 import net.visualillusionsent.vibotx.api.plugin.Plugin;
+import net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes;
 import net.visualillusionsent.vibotx.configuration.ConfigurationManager;
 import net.visualillusionsent.vibotx.logging.VILogger;
+import org.pircbotx.Colors;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.jar.Manifest;
+
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.DEVELOPERS;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.ISSUESURL;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.JENKINSBUILD;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.STATUSURL;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.WEBSITEURL;
 
 /**
  * VIBotX - The Visual Illusions IRC Bot
@@ -38,9 +47,10 @@ import java.io.IOException;
 public final class VIBotX extends PircBotX implements Plugin {
     public static final File universe;
     public static final VILogger log;
-    public static final EventHandler eventHandler = new EventHandler();
     protected static VIBotX bot;
     private static JavaPluginLoader jpLoader;
+    private static ProgramChecker pCheck;
+    private static Manifest mf;
 
     static {
         String universe_path = System.getProperty("vibotx.universe.path", ".");
@@ -64,6 +74,26 @@ public final class VIBotX extends PircBotX implements Plugin {
 
     public static void main(String[] args) {
         log.info("VIBotX - Visual Illusions IRC Bot is starting...");
+        pokeManifest();
+        try {
+            String tempVersion = getVersionStatic();
+            String statusStr = "STABLE";
+            if (tempVersion.contains("-SNAPSHOT")) {
+                tempVersion = tempVersion.replace("-SNAPSHOT", "");
+                statusStr = "SNAPSHOT";
+            }
+            pCheck = new ProgramChecker("VIBotX", tempVersion, "http://status.visualillusionsent.net/", statusStr);
+        }
+        catch (Exception ex) {
+            log.debug("Failed to initiation ProgramChecker", ex);
+        }
+        if (pCheck != null) {
+            ProgramChecker.Status status = pCheck.isLatest();
+            if (status == ProgramChecker.Status.UPDATE) {
+                pCheck.getStatusMessage();
+            }
+        }
+
         Configuration.Builder<VIBotX> cfgbuild = new Configuration.Builder()
                 .setVersion("VIBotX " + getVersionStatic() + ", The Visual Illusions IRC Bot")
                 .setRealName("VIBotX " + getVersionStatic() + ", The Visual Illusions IRC Bot")
@@ -108,6 +138,65 @@ public final class VIBotX extends PircBotX implements Plugin {
         return jpLoader;
     }
 
+    public static String getProgramStatusMessage() {
+        ProgramChecker.Status status = pCheck.isLatest();
+        switch (status) {
+            case ERROR:
+                return Colors.RED.concat(pCheck.getStatusMessage());
+            case UPDATE:
+                return Colors.YELLOW.concat(pCheck.getStatusMessage());
+            default:
+                return Colors.GREEN.concat(pCheck.getStatusMessage());
+        }
+    }
+
+    private static void pokeManifest() {
+        if (mf != null) {
+            return;
+        }
+        try {
+            mf = JarUtils.getManifest(VIBotX.class);
+        }
+        catch (IOException ioex) {
+            mf = new Manifest();
+        }
+    }
+
+    private static String getStatusURL() {
+        if (mf.getMainAttributes().containsKey(STATUSURL.getValue())) {
+            return mf.getMainAttributes().getValue(STATUSURL.getValue());
+        }
+        return "";
+    }
+
+    public static String getJenkinsBuild() {
+        if (mf.getMainAttributes().containsKey(JENKINSBUILD.getValue())) {
+            return mf.getMainAttributes().getValue(JENKINSBUILD.getValue());
+        }
+        return "0";
+    }
+
+    public static String getIssuesURL() {
+        if (mf.getMainAttributes().containsKey(ISSUESURL.getValue())) {
+            return mf.getMainAttributes().getValue(ISSUESURL.getValue());
+        }
+        return "UNKNOWN";
+    }
+
+    public static String getWebsiteURL() {
+        if (mf.getMainAttributes().containsKey(WEBSITEURL.getValue())) {
+            return mf.getMainAttributes().getValue(WEBSITEURL.getValue());
+        }
+        return "UNKNOWN";
+    }
+
+    public static String getDevelopers() {
+        if (mf.getMainAttributes().containsKey(DEVELOPERS.getValue())) {
+            return mf.getMainAttributes().getValue(DEVELOPERS.getValue());
+        }
+        return "UNKNOWN";
+    }
+
     /* Plugin Methods */
     @Override
     public final String getName() {
@@ -137,12 +226,10 @@ public final class VIBotX extends PircBotX implements Plugin {
     }
 
     public static final String getVersionStatic() {
-        try {
-            return JarUtils.getManifest(VIBotX.class).getMainAttributes().getValue("Version");
+        if (mf.getMainAttributes().containsKey(PluginManifestAttributes.VERSION.getValue())) {
+            return mf.getMainAttributes().getValue(PluginManifestAttributes.VERSION.getValue());
         }
-        catch (IOException e) {
-            return "UNDEFINED";
-        }
+        return "UNDEFINED";
     }
 
     @Override

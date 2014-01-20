@@ -49,10 +49,6 @@ import static net.visualillusionsent.vibotx.api.command.ReturnStatus.SUCCESS;
  * @since 1.0
  */
 public final class CommandParser {
-    /**
-     * CommandParser instance
-     */
-    private static CommandParser instance;
 
     /**
      * Synchronization lock object
@@ -69,10 +65,27 @@ public final class CommandParser {
      * Should not be constructed externally
      */
     private CommandParser() {
-        if (instance != null) {
-            throw new IllegalStateException("Only one CommandParser instance may be created at a time.");
-        }
         commands = new HashMap<>();
+    }
+
+    /* Initialization on Demand Holder idiom */
+    // Private constructor prevents instantiation from other classes
+    private static class CommandParserHolder {
+        public static final CommandParser INSTANCE;
+
+        static {
+            INSTANCE = new CommandParser();
+            try {
+                Class[] cmdClasses = JarUtils.getClassesInPackageExtending(JarUtils.getJarForClass(VIBotX.class), "net.visualillusionsent.vibotx.command", BaseCommand.class);
+                for (Class cls : cmdClasses) {
+                    log.debug("Found Internal Command Class: " + cls.getSimpleName());
+                    cls.getConstructor(VIBotX.class).newInstance(VIBotX.bot);
+                }
+            }
+            catch (Exception ex) {
+                log.error("Failed to register internal commands...", ex);
+            }
+        }
     }
 
     /**
@@ -84,23 +97,10 @@ public final class CommandParser {
      * @see net.visualillusionsent.vibotx.command
      */
     public static CommandParser getInstance() {
-        if (instance == null) {
-            instance = new CommandParser();
 
-            try {
-                Class[] cmdClasses = JarUtils.getClassesInPackageExtending(JarUtils.getJarForClass(VIBotX.class), "net.visualillusionsent.vibotx.command", BaseCommand.class);
-                for (Class cls : cmdClasses) {
-                    log.debug("Found Internal Command Class: " + cls.getSimpleName());
-                    cls.getConstructor(VIBotX.class).newInstance(VIBotX.bot);
-                }
-            }
-            catch (Exception ex) {
-                log.error("Failed to register internal commands...", ex);
-            }
-
-        }
-        return instance;
+        return CommandParserHolder.INSTANCE;
     }
+    /* END */
 
     /**
      * Adds a {@link BaseCommand} to the server list.
@@ -215,7 +215,7 @@ public final class CommandParser {
     public static final void printHelp(Channel channel, User user, int pageStart) {
         synchronized (lock) {
             user.send().notice("-- Help List for you in Channel: ".concat(channel.getName()).concat(" --"));
-            int pageMax = instance.commands.values().size() / 10;
+            int pageMax = getInstance().commands.values().size() / 10;
             pageMax = pageMax < 1 ? 1 : pageMax;
             if (pageMax < pageStart) {
                 pageStart = 1;
@@ -224,7 +224,7 @@ public final class CommandParser {
             int nPSten = nPS + 10;
             user.send().notice(String.format("-- Page %d of %d --", pageStart, pageMax));
             List<BaseCommand> toDisplay = new ArrayList<>();
-            toDisplay.addAll(instance.commands.values());
+            toDisplay.addAll(getInstance().commands.values());
             for (BaseCommand cmd : toDisplay.subList(nPS, nPSten)) {
                 if (cmd.requiresVoice() && !channel.hasVoice(user)) {
                     continue;
