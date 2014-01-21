@@ -15,37 +15,21 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
-/* 
- * Copyright 2012 - 2013 Visual Illusions Entertainment.
- *  
- * This file is part of VIBot.
- *
- * VIBot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * VIBot is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with VIBot.
- * If not, see http://www.gnu.org/licenses/lgpl.html
- */
 package net.visualillusionsent.vibotx.command;
 
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 
 /**
  * Part Channel Command<br>
- * Tells the {@link VIBotX} to leave a {@link Channel}<br>
- * <b>Usage:</b> !part [channel] [reason]<br>
+ * Tells the {@link VIBotX} to leave a {@link org.pircbotx.Channel}<br>
+ * <b>Usage:</b> .part [reason]<br>
  * <b>Minimum Params:</b> 0<br>
  * <b>Maximum Params:</b> &infin;<br>
- * <b>Requires:</b> Bot Operator<br/>
+ * <b>Requires:</b> Bot Operator, Channel<br/>
  *
  * @author Jason (darkdiplomat)
  */
@@ -61,7 +45,7 @@ public final class PartChannelCommand extends BaseCommand {
     /**
      * Constructs a new {@code PartChannelCommand}
      */
-    public PartChannelCommand(VIBotX viBotX) {
+    public PartChannelCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

@@ -23,5 +23,6 @@ package net.visualillusionsent.vibotx.api.command;
 public enum ReturnStatus {
     NOTCOMMAND,
     FAILURE,
-    SUCCESS;
+    SUCCESS,
+    ERROR;
 }

@@ -20,8 +20,8 @@ package net.visualillusionsent.vibotx;
 import net.visualillusionsent.utils.JarUtils;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
-import net.visualillusionsent.vibotx.api.command.CommandExecutionException;
 import net.visualillusionsent.vibotx.api.command.ReturnStatus;
 import net.visualillusionsent.vibotx.api.plugin.Plugin;
 import net.visualillusionsent.vibotx.command.OkThanksCommand;
@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static net.visualillusionsent.vibotx.VIBotX.log;
+import static net.visualillusionsent.vibotx.api.command.ReturnStatus.ERROR;
 import static net.visualillusionsent.vibotx.api.command.ReturnStatus.FAILURE;
 import static net.visualillusionsent.vibotx.api.command.ReturnStatus.NOTCOMMAND;
 import static net.visualillusionsent.vibotx.api.command.ReturnStatus.SUCCESS;
@@ -76,8 +77,8 @@ public final class CommandParser {
         static {
             INSTANCE = new CommandParser();
             try {
-                Class[] cmdClasses = JarUtils.getClassesInPackageExtending(JarUtils.getJarForClass(VIBotX.class), "net.visualillusionsent.vibotx.command", BaseCommand.class);
-                for (Class cls : cmdClasses) {
+                Class<? extends BaseCommand>[] cmdClasses = JarUtils.getClassesInPackageExtending(JarUtils.getJarForClass(VIBotX.class), "net.visualillusionsent.vibotx.command", BaseCommand.class);
+                for (Class<? extends BaseCommand> cls : cmdClasses) {
                     log.debug("Found Internal Command Class: " + cls.getSimpleName());
                     cls.getConstructor(VIBotX.class).newInstance(VIBotX.bot);
                 }
@@ -108,14 +109,13 @@ public final class CommandParser {
      * @param cmd
      *         the {@link BaseCommand} to add
      */
-    public final void add(BaseCommand cmd) {
+    public final void add(BaseCommand cmd) throws CommandCreationException {
         if (cmd != null) {
             if (!commands.containsKey(cmd.getName())) {
                 commands.put(cmd.getName(), cmd);
             }
             else {
-                log.warning("Command: '".concat(cmd.getName()).concat("' is already registered!"));
-                return;
+                throw new CommandCreationException("Command: '".concat(cmd.getName()).concat("' is already registered!"));
             }
             if (!cmd.getAliases()[0].equals(BotCommand.NULL)) {
                 for (String alias : cmd.getAliases()) {
@@ -138,11 +138,8 @@ public final class CommandParser {
      *         the {@link CommandEvent}
      *
      * @return {@code true} if is parsed successfully
-     *
-     * @throws CommandExecutionException
-     *         if an exception occurs while parsing the command
      */
-    public static final ReturnStatus parseBotCommand(CommandEvent event) throws CommandExecutionException {
+    public static final ReturnStatus parseBotCommand(CommandEvent event) {
         synchronized (lock) {
             BaseCommand cmd = getInstance().getCommand(event.getCommand());
 
@@ -184,8 +181,9 @@ public final class CommandParser {
                     }
                     return FAILURE;
                 }
-                catch (Exception ex) {
-                    throw new CommandExecutionException("Exception occurred while parsing Command: ".concat(event.getCommand()), ex);
+                catch (Throwable thrown) {
+                    log.error("Exception occurred while parsing Command: ".concat(event.getCommand()), thrown);
+                    return ERROR;
                 }
             }
         }
@@ -259,7 +257,7 @@ public final class CommandParser {
      */
     public final void removePluginCommands(Plugin plugin) {
         synchronized (lock) {
-            List<String> toRemove = new ArrayList<String>();
+            List<String> toRemove = new ArrayList<>();
             for (String cmdName : commands.keySet()) {
                 BaseCommand cmd = commands.get(cmdName);
                 if (cmd.getPlugin() != null && cmd.getPlugin().equals(plugin)) {

@@ -21,6 +21,7 @@ package net.visualillusionsent.vibotx.command;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
 
@@ -48,7 +49,7 @@ public final class ReloadPluginCommand extends BaseCommand {
     /**
      * Constructs a new {@code ReloadPluginCommand}
      */
-    public ReloadPluginCommand(VIBotX viBotX) {
+    public ReloadPluginCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

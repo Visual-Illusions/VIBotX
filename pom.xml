@@ -259,6 +259,8 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>jnks-${jnks.build}</shadedClassifierName>
                         </configuration>
                     </execution>
                 </executions>

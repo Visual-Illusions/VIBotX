@@ -38,6 +38,7 @@ import net.visualillusionsent.utils.DateUtils;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import org.pircbotx.Channel;
 import org.pircbotx.User;
@@ -63,7 +64,7 @@ import java.util.TimeZone;
 public final class TimeCommand extends BaseCommand {
     private final String print = "The current time in TimeZone: '%s' is %s";
 
-    public TimeCommand(VIBotX viBotX) {
+    public TimeCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

@@ -20,7 +20,7 @@ package net.visualillusionsent.vibotx.api.command;
 /**
  * @author Jason (darkdiplomat)
  */
-public class CommandCreationException extends RuntimeException {
+public class CommandCreationException extends Exception {
 
     public CommandCreationException(String msg) {
         super(msg);

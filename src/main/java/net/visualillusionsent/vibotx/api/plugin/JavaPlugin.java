@@ -18,6 +18,9 @@
 package net.visualillusionsent.vibotx.api.plugin;
 
 import net.visualillusionsent.utils.JarUtils;
+import net.visualillusionsent.utils.ProgramChecker;
+import net.visualillusionsent.utils.PropertiesFile;
+import net.visualillusionsent.utils.UtilityException;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.events.EventHandler;
 import net.visualillusionsent.vibotx.api.events.EventListener;
@@ -27,6 +30,11 @@ import net.visualillusionsent.vibotx.logging.VILogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLClassLoader;
+import java.util.jar.Manifest;
+
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.PLUGINNAME;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.STATUSURL;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.VERSION;
 
 /**
  * @author Jason (darkdiplomat)
@@ -34,9 +42,32 @@ import java.net.URLClassLoader;
 public abstract class JavaPlugin implements Plugin {
     private boolean disabled = true, closed = false;
     private VILogger logger;
+    private PropertiesFile plugin_cfg;
+    private ProgramChecker pChecker;
+
+    public JavaPlugin() {
+        configureProgramChecker();
+    }
+
+    private void configureProgramChecker() {
+        Manifest mf = VIBotX.jpload().getPluginManifest(this);
+        if (mf.getMainAttributes().containsKey(STATUSURL.getValue())) {
+            try {
+                String tempVersion = getVersion();
+                String status = "STABLE";
+                if (tempVersion.contains("-SNAPSHOT")) {
+                    tempVersion = tempVersion.replace("-SNAPSHOT", "");
+                    status = "SNAPSHOT";
+                }
+                pChecker = new ProgramChecker(getName(), tempVersion, mf.getMainAttributes().getValue(STATUSURL.getValue()), status);
+            }
+            catch (Exception ex) {
+            }
+        }
+    }
 
     /**
-     * Runs the {@code BotPlugin} enable code to check if enabling can happen<br>
+     * Runs the {@code Plugin} enable code to check if enabling can happen<br>
      *
      * @return {@code true} if successfully enabled; {@code false} if failed its
      * checks
@@ -44,7 +75,7 @@ public abstract class JavaPlugin implements Plugin {
     public abstract boolean enable();
 
     /**
-     * Disables the {@code BotPlugin}
+     * Disables the {@code Plugin}
      */
     public abstract void disable();
 
@@ -60,7 +91,7 @@ public abstract class JavaPlugin implements Plugin {
     /* Convenience Methods */
     @Override
     public final String getName() {
-        return VIBotX.jpload().getPluginManifest(this).getMainAttributes().getValue("Plugin-Name");
+        return VIBotX.jpload().getPluginManifest(this).getMainAttributes().getValue(PLUGINNAME.getValue());
     }
 
     @Override
@@ -82,7 +113,7 @@ public abstract class JavaPlugin implements Plugin {
 
     @Override
     public String getVersion() {
-        return VIBotX.jpload().getPluginManifest(this).getMainAttributes().getValue("Plugin-Version");
+        return VIBotX.jpload().getPluginManifest(this).getMainAttributes().getValue(VERSION.getValue());
     }
 
     @Override
@@ -92,6 +123,65 @@ public abstract class JavaPlugin implements Plugin {
 
     public final void registerEventListener(EventListener listener) throws EventMethodSignatureException {
         EventHandler.getInstance().registerListener(listener, this);
+    }
+
+    /**
+     * Gets the path to the {@code Plugin}'s configuration, taking into account the specified universe
+     *
+     * @return configuration path; {@code null} if the path could not be created
+     */
+    public final String getPluginConfigurationPath() throws UtilityException {
+        File temp = new File(VIBotX.getUniverse(), "config/".concat(getName()));
+        if (!temp.exists()) {
+            if (!temp.mkdirs()) {
+                return null;
+            }
+        }
+        return temp.getAbsolutePath();
+    }
+
+    /**
+     * Gets the default {@link PropertiesFile} for the {@code Plugin}<br>
+     * Generated and stored in ../config/{pluginname}/{pluginname}.cfg
+     *
+     * @return {@code Plugin}'s {@link PropertiesFile}
+     *
+     * @throws UtilityException
+     */
+    public final PropertiesFile getPluginConfiguration() throws UtilityException {
+        if (plugin_cfg == null) {
+            plugin_cfg = new PropertiesFile(String.format("%s/%s.cfg", getPluginConfigurationPath(), getName()));
+        }
+        return plugin_cfg;
+    }
+
+    /**
+     * Checks if the {@code Plugin} supports the {@link net.visualillusionsent.utils.ProgramChecker}
+     *
+     * @return {@code true} if ProgramChecker is supported; {@code false} otherwise
+     */
+    public final boolean supportsProgramChecker() {
+        return pChecker != null;
+    }
+
+    /**
+     * Gets whether the {@code Plugin} is the latest version or not.
+     *
+     * @return the program checker status
+     */
+    public final ProgramChecker.Status isLatestVersion() {
+        if (supportsProgramChecker()) {
+            return pChecker.isLatest();
+        }
+        throw new UnsupportedOperationException("ProgramChecker not supported by this plugin");
+    }
+
+    public final String getProgramStatusMessage() {
+        if (supportsProgramChecker()) {
+            isLatestVersion();
+            return pChecker.getStatusMessage();
+        }
+        throw new UnsupportedOperationException("ProgramChecker not supported by this plugin");
     }
     /* END Convenience Methods */
 
@@ -120,6 +210,7 @@ public abstract class JavaPlugin implements Plugin {
     }
     /* END Internal Plugin Handling Methods */
 
+    @Override
     public final String toString() {
         return String.format("%s v%s", getName(), getVersion());
     }

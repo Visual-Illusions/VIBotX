@@ -67,7 +67,7 @@ public abstract class BaseCommand {
      * @param plugin
      *         the Plugin creating this command
      */
-    public BaseCommand(Plugin plugin) {
+    public BaseCommand(Plugin plugin) throws CommandCreationException {
         if (!getClass().isAnnotationPresent(BotCommand.class)) {
             throw new CommandCreationException("BotCommand annotation not found!");
         }
@@ -75,7 +75,7 @@ public abstract class BaseCommand {
             cmd = getClass().getAnnotation(BotCommand.class);
         }
         if (plugin == null) {
-            throw new IllegalArgumentException("Plugin cannot be null");
+            throw new CommandCreationException("Plugin cannot be null");
         }
         this.plugin = plugin;
         CommandParser.getInstance().add(this);

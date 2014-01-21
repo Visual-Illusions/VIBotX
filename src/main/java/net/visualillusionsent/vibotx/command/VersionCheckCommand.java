@@ -20,6 +20,7 @@ package net.visualillusionsent.vibotx.command;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import org.pircbotx.Colors;
 
@@ -49,7 +50,7 @@ import java.util.List;
 public final class VersionCheckCommand extends BaseCommand {
     private final List<String> about;
 
-    public VersionCheckCommand(VIBotX viBotX) {
+    public VersionCheckCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
 
         ArrayList<String> pre = new ArrayList<>();

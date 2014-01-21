@@ -21,6 +21,7 @@ import net.visualillusionsent.vibotx.MuteTracker;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 
 /**
@@ -47,7 +48,7 @@ public final class OkThanksCommand extends BaseCommand {
     /**
      * Constructs a new {@code OkThanksCommand}
      */
-    public OkThanksCommand(VIBotX viBotX) {
+    public OkThanksCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

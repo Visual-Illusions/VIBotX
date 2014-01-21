@@ -20,6 +20,7 @@ package net.visualillusionsent.vibotx.command;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
 
@@ -47,7 +48,7 @@ public final class EnablePluginCommand extends BaseCommand {
     /**
      * Constructs a new {@code EnablePluginCommand}
      */
-    public EnablePluginCommand(VIBotX viBotX) {
+    public EnablePluginCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

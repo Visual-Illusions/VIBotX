@@ -22,6 +22,7 @@ import net.visualillusionsent.utils.UtilityException;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import org.pircbotx.Channel;
 import org.pircbotx.User;
@@ -44,7 +45,7 @@ import org.pircbotx.User;
 )
 public final class PingCommand extends BaseCommand {
 
-    public PingCommand(VIBotX viBotX) {
+    public PingCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 

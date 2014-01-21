@@ -21,6 +21,7 @@ import net.visualillusionsent.vibotx.CommandParser;
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
+import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 
 /**
@@ -46,7 +47,7 @@ public final class HelpCommand extends BaseCommand {
     /**
      * Constructs a new {@code HelpCommand}
      */
-    public HelpCommand(VIBotX viBotX) {
+    public HelpCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
 
