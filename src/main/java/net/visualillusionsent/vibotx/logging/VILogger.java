@@ -317,6 +317,12 @@ public final class VILogger extends Logger {
         }
     }
 
+    public final synchronized void close() {
+        for (Handler handler : getHandlers()) {
+            handler.close();
+        }
+    }
+
     /**
      * Bot Logger Formatter
      *

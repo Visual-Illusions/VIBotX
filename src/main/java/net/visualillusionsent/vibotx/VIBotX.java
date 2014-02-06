@@ -19,6 +19,8 @@ package net.visualillusionsent.vibotx;
 
 import net.visualillusionsent.utils.JarUtils;
 import net.visualillusionsent.utils.ProgramChecker;
+import net.visualillusionsent.utils.ProgramStatus;
+import net.visualillusionsent.utils.StringUtils;
 import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
 import net.visualillusionsent.vibotx.api.plugin.Plugin;
 import net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes;
@@ -31,6 +33,8 @@ import org.pircbotx.exception.IrcException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.jar.Manifest;
 
 import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.DEVELOPERS;
@@ -65,6 +69,11 @@ public final class VIBotX extends PircBotX implements Plugin {
         }
         universe = tempUni;
         log = new VILogger("VIBotX");
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                log.close();
+            }
+        });
     }
 
     public VIBotX(Configuration<VIBotX> configuration) {
@@ -82,21 +91,21 @@ public final class VIBotX extends PircBotX implements Plugin {
                 tempVersion = tempVersion.replace("-SNAPSHOT", "");
                 statusStr = "SNAPSHOT";
             }
-            pCheck = new ProgramChecker("VIBotX", tempVersion, "http://status.visualillusionsent.net/", statusStr);
+            pCheck = new ProgramChecker("VIBotX", StringUtils.stringToLongArray(tempVersion, "."), getStatusURL(), ProgramStatus.fromString(statusStr));
         }
         catch (Exception ex) {
             log.debug("Failed to initiation ProgramChecker", ex);
         }
         if (pCheck != null) {
-            ProgramChecker.Status status = pCheck.isLatest();
+            ProgramChecker.Status status = pCheck.checkStatus();
             if (status == ProgramChecker.Status.UPDATE) {
                 pCheck.getStatusMessage();
             }
         }
 
         Configuration.Builder<VIBotX> cfgbuild = new Configuration.Builder()
-                .setVersion("VIBotX " + getVersionStatic() + ", The Visual Illusions IRC Bot")
-                .setRealName("VIBotX " + getVersionStatic() + ", The Visual Illusions IRC Bot")
+                .setVersion("VIBotX " + getVersionStatic() + ", Visual Illusions IRC Bot")
+                .setRealName("VIBotX " + getVersionStatic() + ", Visual Illusions IRC Bot")
                 .setShutdownHookEnabled(true)
                 .addListener(new HeyListen());
         try {
@@ -139,7 +148,7 @@ public final class VIBotX extends PircBotX implements Plugin {
     }
 
     public static String getProgramStatusMessage() {
-        ProgramChecker.Status status = pCheck.isLatest();
+        ProgramChecker.Status status = pCheck.checkStatus();
         switch (status) {
             case ERROR:
                 return Colors.RED.concat(pCheck.getStatusMessage());
@@ -162,11 +171,15 @@ public final class VIBotX extends PircBotX implements Plugin {
         }
     }
 
-    private static String getStatusURL() {
+    private static URL getStatusURL() {
         if (mf.getMainAttributes().containsKey(STATUSURL.getValue())) {
-            return mf.getMainAttributes().getValue(STATUSURL.getValue());
+            try {
+                return new URL(mf.getMainAttributes().getValue(STATUSURL.getValue()));
+            }
+            catch (MalformedURLException e) {
+            }
         }
-        return "";
+        return null;
     }
 
     public static String getJenkinsBuild() {

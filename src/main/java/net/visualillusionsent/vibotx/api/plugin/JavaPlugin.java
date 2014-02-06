@@ -171,7 +171,7 @@ public abstract class JavaPlugin implements Plugin {
      */
     public final ProgramChecker.Status isLatestVersion() {
         if (supportsProgramChecker()) {
-            return pChecker.isLatest();
+            return pChecker.checkStatus();
         }
         throw new UnsupportedOperationException("ProgramChecker not supported by this plugin");
     }

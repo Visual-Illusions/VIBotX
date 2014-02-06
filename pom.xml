@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jnks.build>0</jnks.build>
-        <viutils.version>1.2.1</viutils.version>
+        <viutils.version>1.3.0</viutils.version>
         <pircbotx.version>2.0.1</pircbotx.version>
         <devs>darkdiplomat</devs>
         <status.url>http://status.visualillusionsent.net</status.url>
@@ -62,14 +62,18 @@
         <repository>
             <id>vi-repo2</id>
             <name>Visual Illusions Repository</name>
-            <url>http://repo2.visualillusionsent.net/repository/public/</url>
+            <url>http://repo2.visualillusionsent.net/</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.pircbotx</groupId>
+            <groupId>net.visualillusionsent</groupId>
+            <artifactId>viutils</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+        <groupId>org.pircbotx</groupId>
             <artifactId>pircbotx</artifactId>
-            <version>${pircbotx.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -77,12 +81,6 @@
             <artifactId>lombok</artifactId>
             <version>1.12.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.visualillusionsent</groupId>
-            <artifactId>viutils</artifactId>
-            <version>1.3.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -96,7 +94,7 @@
             <dependency>
                 <groupId>net.visualillusionsent</groupId>
                 <artifactId>viutils</artifactId>
-                <version>1.3.0</version>
+                <version>${viutils.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
