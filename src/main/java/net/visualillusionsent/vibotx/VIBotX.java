@@ -71,6 +71,9 @@ public final class VIBotX extends PircBotX implements Plugin {
         log = new VILogger("VIBotX");
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+                if (jpLoader != null) {
+                    jpLoader.disableAllPlugins();
+                }
                 log.close();
             }
         });
@@ -122,16 +125,12 @@ public final class VIBotX extends PircBotX implements Plugin {
         }
 
         bot = new VIBotX(cfgbuild.buildConfiguration());
-        bot.jpLoader.scanPlugins();
-        bot.jpLoader.enableAllPlugins();
+        jpLoader.scanPlugins();
+        jpLoader.enableAllPlugins();
         try {
             bot.connect();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (IrcException e) {
-            e.printStackTrace();
+        } catch (IrcException | IOException ex) {
+            log.error("CONNECTION ERROR: ", ex);
         }
     }
 
@@ -177,6 +176,8 @@ public final class VIBotX extends PircBotX implements Plugin {
                 return new URL(mf.getMainAttributes().getValue(STATUSURL.getValue()));
             }
             catch (MalformedURLException e) {
+                log.error("There was a bug that has caused a MalformedURLException when checking the VIBotX Status." +
+                        "Verify your VIBotX build is good or report this error.");
             }
         }
         return null;
@@ -238,7 +239,7 @@ public final class VIBotX extends PircBotX implements Plugin {
         return getVersionStatic();
     }
 
-    public static final String getVersionStatic() {
+    public static String getVersionStatic() {
         if (mf.getMainAttributes().containsKey(PluginManifestAttributes.VERSION.getValue())) {
             return mf.getMainAttributes().getValue(PluginManifestAttributes.VERSION.getValue());
         }

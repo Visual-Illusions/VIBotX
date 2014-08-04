@@ -80,8 +80,7 @@ public final class JavaPluginLoader {
             log.error("Failed to scan for plugins. 'plugins/' is not a directory. Creating...");
             dir.mkdir();
             return;
-        }
-        else if (!dir.isDirectory()) {
+        } else if (!dir.isDirectory()) {
             log.error("Failed to scan for plugins. 'plugins/' is not a directory but a file...");
             return;
         }
@@ -94,8 +93,7 @@ public final class JavaPluginLoader {
             Manifest check = scan(jar);
             if (check == null) {
                 continue;
-            }
-            else {
+            } else {
                 canLoad.put(jar, check);
             }
         }
@@ -108,9 +106,7 @@ public final class JavaPluginLoader {
     /**
      * Get the Manifest from a jar file
      *
-     * @param jar
-     *         the plugin jar file
-     *
+     * @param jar the plugin jar file
      * @return a {@link Manifest} if no errors occurred; {@code null} if unable to load the plugin
      */
     private final Manifest scan(File jar) {
@@ -133,13 +129,11 @@ public final class JavaPluginLoader {
                 if (!pluginCheck.getBoolean(mainAtt.getValue("Plugin-Name"))) {
                     return null;
                 }
-            }
-            else {
+            } else {
                 pluginCheck.setBoolean(mainAtt.getValue("Plugin-Name"), true);
             }
 
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             log.error("Exception while loading plugin jar '" + jar.getName() + "' (MANIFEST.mf missing?)", ex);
             return null;
         }
@@ -166,7 +160,6 @@ public final class JavaPluginLoader {
      *
      * @param pluginJar
      * @param mf
-     *
      * @return
      */
     private final boolean load(File pluginJar, Manifest mf, boolean skipExistanceCheck) {
@@ -181,9 +174,8 @@ public final class JavaPluginLoader {
             pluginMF.put(simpleMain(mainClass), mf);
             URLClassLoader loader;
             try {
-                loader = new URLClassLoader(new URL[]{ pluginJar.toURI().toURL() }, Thread.currentThread().getContextClassLoader());
-            }
-            catch (MalformedURLException ex) {
+                loader = new URLClassLoader(new URL[]{pluginJar.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+            } catch (MalformedURLException ex) {
                 log.error("Exception while loading class", ex);
                 return false;
             }
@@ -192,8 +184,7 @@ public final class JavaPluginLoader {
             synchronized (lock) {
                 this.plugins.put(name, plugin);
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             log.error("Exception while loading plugin '" + pluginJar + "'", ex);
             return false;
         }
@@ -209,9 +200,7 @@ public final class JavaPluginLoader {
     /**
      * Enables the given plugin. Loads the plugin if not loaded (and available)
      *
-     * @param name
-     *         the name of the {@link Plugin}
-     *
+     * @param name the name of the {@link Plugin}
      * @return {@code true} on success, {@code false} on failure
      */
     public final boolean enablePlugin(String name) {
@@ -243,8 +232,7 @@ public final class JavaPluginLoader {
                     enabled = plugin.enable();
                     needNewInstance = false;
                 }
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 // If the plugin is in development, they may need to know where something failed.
                 log.error("Could not enable " + plugin.getName(), t);
             }
@@ -254,8 +242,7 @@ public final class JavaPluginLoader {
                 File file = new File(VIBotX.getUniverse(), plugin.getJarPath());
                 Manifest mf = JarUtils.getManifest(plugin.getJarPath());
                 enabled = load(file, mf, true);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 // If the plugin is in development, they may need to know where something failed.
                 log.error("Could not enable " + plugin.getName(), t);
             }
@@ -264,8 +251,7 @@ public final class JavaPluginLoader {
         if (enabled) {
             plugin.flagEnabled();
             log.info("Enabled " + plugin.getName() + ", Version " + plugin.getVersion());
-        }
-        else {
+        } else {
             // Clean Up
             CommandParser.getInstance().removePluginCommands(plugin);
             EventHandler.getInstance().unregisterPluginListeners(plugin);
@@ -273,7 +259,9 @@ public final class JavaPluginLoader {
         return enabled;
     }
 
-    /** Enables all plugins, used when starting up the server. */
+    /**
+     * Enables all plugins, used when starting up the server.
+     */
     public final void enableAllPlugins() {
         int enabled = 0;
         for (JavaPlugin plugin : plugins.values()) {
@@ -287,9 +275,7 @@ public final class JavaPluginLoader {
     /**
      * Disables the given plugin
      *
-     * @param name
-     *         the name of the {@link Plugin}
-     *
+     * @param name the name of the {@link Plugin}
      * @return {@code true} on success, {@code false} on failure
      */
     public final boolean disablePlugin(String name) {
@@ -311,20 +297,22 @@ public final class JavaPluginLoader {
         /* Set the plugin as disabled, and send disable message */
         try {
             plugin.flagDisabled();
-        }
-        catch (Throwable thrown) {
+        } catch (Throwable thrown) {
             log.error("An error occurred while disabling Plugin: " + plugin.getName(), thrown);
         }
 
         // Clean Up
-        CommandParser.getInstance().removePluginCommands(plugin);
-        EventHandler.getInstance().unregisterPluginListeners(plugin);
+        CommandParser.getInstance().removePluginCommands(plugin); // Clear out commands
+        EventHandler.getInstance().unregisterPluginListeners(plugin); // Clear out events
+        plugin.getPluginLogger().close(); // Shut down plugin's logger removing the lock on the file.
 
         log.info("Disabled " + plugin.getName() + ", Version " + plugin.getVersion());
         return true;
     }
 
-    /** Disables all plugins, used when shutting down the server. */
+    /**
+     * Disables all plugins, used when shutting down the server.
+     */
     public final void disableAllPlugins() {
         for (JavaPlugin plugin : this.getPlugins()) {
             disablePlugin(plugin);
@@ -335,7 +323,6 @@ public final class JavaPluginLoader {
      * Reload the specified plugin
      *
      * @param name
-     *
      * @return {@code true} on success; {@code false} on failure which probably means the plugin is now not enabled nor loaded
      */
     public boolean reloadPlugin(String name) {
@@ -365,8 +352,7 @@ public final class JavaPluginLoader {
             if (test) {
                 test = enablePlugin(plugin.getName()); // We have a name, not the new instance. Don't pass the plugin directly.
             }
-        }
-        catch (Throwable thrown) {
+        } catch (Throwable thrown) {
             log.error("Error while reloading Plugin: " + plugin.getName(), thrown);
         }
         return test;
@@ -376,7 +362,6 @@ public final class JavaPluginLoader {
      * Get the Plugin with specified name.
      *
      * @param name
-     *
      * @return The plugin for the given name, or null on failure.
      */
     public final JavaPlugin getPlugin(String name) {
@@ -425,8 +410,7 @@ public final class JavaPluginLoader {
             for (JavaPlugin plugin : plugins.values()) {
                 if (!plugin.isDisabled()) {
                     sb.append(Colors.GREEN).append(plugin.getName()).append(Colors.WHITE).append(", ");
-                }
-                else {
+                } else {
                     sb.append(Colors.RED).append(plugin.getName()).append(Colors.WHITE).append(", ");
                 }
             }
@@ -435,8 +419,7 @@ public final class JavaPluginLoader {
 
         if (str.length() > 1) {
             return str.substring(0, str.length() - 1);
-        }
-        else {
+        } else {
             return null;
         }
     }
