@@ -17,7 +17,6 @@
  */
 package net.visualillusionsent.vibotx.command;
 
-
 import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.command.BaseCommand;
 import net.visualillusionsent.vibotx.api.command.BotCommand;
@@ -45,6 +44,7 @@ import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
         botOp = true
 )
 public final class ReloadPluginCommand extends BaseCommand {
+    boolean showStack = true; // TODO: add configuration for this
 
     /**
      * Constructs a new {@code ReloadPluginCommand}
@@ -56,12 +56,17 @@ public final class ReloadPluginCommand extends BaseCommand {
     @Override
     public final synchronized boolean execute(CommandEvent event) {
         JavaPluginLoader load = VIBotX.jpload();
-        String msg = "An exception occurred while reloading the plugin...";
-        ;
+
         if (load.reloadPlugin(event.getArgument(0))) {
-            msg = load.getPlugin(event.getArgument(0)).toString().concat(" reloaded successfully!");
+            event.respondToChannel(load.getPlugin(event.getArgument(0)).toString().concat(" reloaded successfully!"));
+        } else {
+            event.respondNoticeToUser("An exception occurred while reloading the plugin...");
+            if (showStack) {
+                for (String line : JavaPluginLoader.getLastThrown()) {
+                    event.respondNoticeToUser(line);
+                }
+            }
         }
-        event.respondNoticeToUser(msg);
         return true;
     }
 }

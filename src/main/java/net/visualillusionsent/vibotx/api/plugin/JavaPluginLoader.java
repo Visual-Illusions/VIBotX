@@ -63,6 +63,7 @@ public final class JavaPluginLoader {
     private final Map<String, Manifest> pluginMF; // This is keyed to main class name
     private final PropertiesFile pluginCheck;
     private static final Object lock = new Object();
+    private static Throwable lastThrown;
 
     public JavaPluginLoader() {
         plugins = new ConcurrentHashMap<>();
@@ -78,22 +79,20 @@ public final class JavaPluginLoader {
         File dir = new File(VIBotX.getUniverse(), "plugins/");
         if (!dir.exists()) {
             log.error("Failed to scan for plugins. 'plugins/' is not a directory. Creating...");
-            dir.mkdir();
+            if (!dir.mkdir()) {
+                log.error("Failed to create 'plugins/' directory...");
+            }
             return;
         } else if (!dir.isDirectory()) {
             log.error("Failed to scan for plugins. 'plugins/' is not a directory but a file...");
             return;
         }
         ArrayList<File> jars = new ArrayList<>();
-        for (File jarFile : dir.listFiles(new JarFileFilter())) {
-            jars.add(jarFile);
-        }
+        Collections.addAll(jars, dir.listFiles(new JarFileFilter()));
         HashMap<File, Manifest> canLoad = new HashMap<>();
         for (File jar : jars) {
             Manifest check = scan(jar);
-            if (check == null) {
-                continue;
-            } else {
+            if (check != null) {
                 canLoad.put(jar, check);
             }
         }
@@ -109,7 +108,7 @@ public final class JavaPluginLoader {
      * @param jar the plugin jar file
      * @return a {@link Manifest} if no errors occurred; {@code null} if unable to load the plugin
      */
-    private final Manifest scan(File jar) {
+    private Manifest scan(File jar) {
         Manifest mf;
         try {
             mf = JarUtils.getManifest(jar.getAbsolutePath());
@@ -162,7 +161,7 @@ public final class JavaPluginLoader {
      * @param mf
      * @return
      */
-    private final boolean load(File pluginJar, Manifest mf, boolean skipExistanceCheck) {
+    private boolean load(File pluginJar, Manifest mf, boolean skipExistanceCheck) {
         try {
             String name = mf.getMainAttributes().getValue("Plugin-Name");
             String mainClass = mf.getMainAttributes().getValue("Plugin-Class");
@@ -177,6 +176,7 @@ public final class JavaPluginLoader {
                 loader = new URLClassLoader(new URL[]{pluginJar.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
             } catch (MalformedURLException ex) {
                 log.error("Exception while loading class", ex);
+                lastThrown = ex;
                 return false;
             }
             Class<?> pluginClass = loader.loadClass(mainClass);
@@ -186,13 +186,14 @@ public final class JavaPluginLoader {
             }
         } catch (Throwable ex) {
             log.error("Exception while loading plugin '" + pluginJar + "'", ex);
+            lastThrown = ex;
             return false;
         }
 
         return true;
     }
 
-    private final String simpleMain(String main) {
+    private String simpleMain(String main) {
         int last = main.lastIndexOf('.');
         return main.substring(last != -1 ? last + 1 : 0, main.length());
     }
@@ -213,7 +214,7 @@ public final class JavaPluginLoader {
     }
 
     /* Same as public boolean enablePlugin(String name) */
-    private final boolean enablePlugin(JavaPlugin plugin) {
+    private boolean enablePlugin(JavaPlugin plugin) {
         if (plugin == null) {
             return false;
         }
@@ -232,9 +233,10 @@ public final class JavaPluginLoader {
                     enabled = plugin.enable();
                     needNewInstance = false;
                 }
-            } catch (Throwable t) {
+            } catch (Throwable thrown) {
                 // If the plugin is in development, they may need to know where something failed.
-                log.error("Could not enable " + plugin.getName(), t);
+                log.error("Could not enable " + plugin.getName(), thrown);
+                lastThrown = thrown;
             }
         }
         if (needNewInstance) {
@@ -242,9 +244,10 @@ public final class JavaPluginLoader {
                 File file = new File(VIBotX.getUniverse(), plugin.getJarPath());
                 Manifest mf = JarUtils.getManifest(plugin.getJarPath());
                 enabled = load(file, mf, true);
-            } catch (Throwable t) {
+            } catch (Throwable thrown) {
                 // If the plugin is in development, they may need to know where something failed.
-                log.error("Could not enable " + plugin.getName(), t);
+                log.error("Could not enable " + plugin.getName(), thrown);
+                lastThrown = thrown;
             }
         }
 
@@ -283,7 +286,7 @@ public final class JavaPluginLoader {
     }
 
     /* Same as public boolean disablePlugin(String name) */
-    private final boolean disablePlugin(JavaPlugin plugin) {
+    private boolean disablePlugin(JavaPlugin plugin) {
         /* Plugin must exist before disabling*/
         if (plugin == null) {
             return false;
@@ -299,6 +302,7 @@ public final class JavaPluginLoader {
             plugin.flagDisabled();
         } catch (Throwable thrown) {
             log.error("An error occurred while disabling Plugin: " + plugin.getName(), thrown);
+            lastThrown = thrown;
         }
 
         // Clean Up
@@ -331,6 +335,7 @@ public final class JavaPluginLoader {
         // Plugin must exist before reloading
         if (plugin == null) {
             log.warning("Could not reload " + name + ". It doesn't exist.");
+            lastThrown = new Exception("Non-Existent Plugin"); //Its dirty but works currently
             return false;
         }
 
@@ -354,6 +359,7 @@ public final class JavaPluginLoader {
             }
         } catch (Throwable thrown) {
             log.error("Error while reloading Plugin: " + plugin.getName(), thrown);
+            lastThrown = thrown;
         }
         return test;
     }
@@ -426,6 +432,15 @@ public final class JavaPluginLoader {
 
     final Manifest getPluginManifest(JavaPlugin plugin) {
         return pluginMF.get(plugin.getClass().getSimpleName());
+    }
+
+    public static String[] getLastThrown() {
+        String[] result = new String[]{lastThrown.getMessage(), "_____", "_____", "_____"};
+
+        for (int count = 0; count < 3 && count < lastThrown.getStackTrace().length; count++) {
+            result[count + 1] = lastThrown.getStackTrace()[count].toString();
+        }
+        return result;
     }
 
     private final class JarFileFilter implements FilenameFilter {

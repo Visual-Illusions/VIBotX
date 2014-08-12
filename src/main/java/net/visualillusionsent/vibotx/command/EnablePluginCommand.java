@@ -44,6 +44,7 @@ import net.visualillusionsent.vibotx.api.plugin.JavaPluginLoader;
         botOp = true
 )
 public final class EnablePluginCommand extends BaseCommand {
+    boolean showStack = true; // TODO: add configuration for this
 
     /**
      * Constructs a new {@code EnablePluginCommand}
@@ -55,11 +56,17 @@ public final class EnablePluginCommand extends BaseCommand {
     @Override
     public final boolean execute(CommandEvent event) {
         JavaPluginLoader load = VIBotX.jpload();
-        String msg = "An exception occurred while enabling plugin...";
+
         if (load.enablePlugin(event.getArgument(0))) {
-            msg = load.getPlugin(event.getArgument(0)).toString().concat(" enabled successfully!");
+            event.respondToChannel(load.getPlugin(event.getArgument(0)).toString().concat(" enabled successfully!"));
+        } else {
+            event.respondNoticeToUser("An exception occurred while enabling the plugin...");
+            if (showStack) {
+                for (String line : JavaPluginLoader.getLastThrown()) {
+                    event.respondNoticeToUser(line);
+                }
+            }
         }
-        event.respondNoticeToUser(msg);
         return true;
     }
 }
