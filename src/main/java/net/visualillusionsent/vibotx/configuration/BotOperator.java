@@ -45,22 +45,12 @@ final class BotOperator {
     public final boolean equals(Object obj) {
         if (obj instanceof BotOperator) {
             BotOperator other = (BotOperator) obj;
-
-            if (!nick.equals(other.nick) && !hasStar(nick, other.nick)) {
-                return false;
-            }
-            if (!login.equals(other.login) && !hasStar(login, other.login)) {
-                return false;
-            }
-            if (!host.equals(other.host) && !hasStar(host, other.host)) {
-                return false;
-            }
-            return true;
+            return (nick.equals(other.nick) || hasStar(nick, other.nick)) && (login.equals(other.login) || hasStar(login, other.login)) && (host.equals(other.host) || hasStar(host, other.host));
         }
         return false;
     }
 
-    private final boolean hasStar(String a, String b) {
+    private boolean hasStar(String a, String b) {
         return a.equals("*") || b.equals("*");
     }
 }

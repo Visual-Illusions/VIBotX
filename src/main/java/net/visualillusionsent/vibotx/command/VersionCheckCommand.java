@@ -55,45 +55,20 @@ public final class VersionCheckCommand extends BaseCommand {
 
         ArrayList<String> pre = new ArrayList<>();
         pre.add(
-                new StringBuilder(Colors.CYAN)
-                        .append("--- ")
-                        .append(Colors.GREEN)
-                        .append("VIBotX ")
-                        .append(Colors.BROWN)
-                        .append("v")
-                        .append(viBotX.getVersion())
-                        .append(Colors.CYAN)
-                        .append(" ---")
-                        .toString()
+                Colors.CYAN + "--- " + Colors.GREEN + "VIBotX " + Colors.BROWN + "v" + viBotX.getVersion() + Colors.CYAN + " ---"
         );
         pre.add("$PROGRAM_STATUS_CHECK$");
         pre.add(
-                new StringBuilder(Colors.CYAN)
-                        .append("Jenkins Build: ")
-                        .append(Colors.GREEN)
-                        .append(VIBotX.getJenkinsBuild())
-                        .toString()
+                Colors.CYAN + "Jenkins Build: " + Colors.GREEN + VIBotX.getJenkinsBuild()
         );
         pre.add(
-                new StringBuilder(Colors.CYAN)
-                        .append("Developer(s): ")
-                        .append(Colors.GREEN)
-                        .append(VIBotX.getDevelopers())
-                        .toString()
+                Colors.CYAN + "Developer(s): " + Colors.GREEN + VIBotX.getDevelopers()
         );
         pre.add(
-                new StringBuilder(Colors.CYAN)
-                        .append("Website: ")
-                        .append(Colors.GREEN)
-                        .append(VIBotX.getWebsiteURL())
-                        .toString()
+                Colors.CYAN + "Website: " + Colors.GREEN + VIBotX.getWebsiteURL()
         );
         pre.add(
-                new StringBuilder(Colors.CYAN)
-                        .append("Issues: ")
-                        .append(Colors.GREEN)
-                        .append(VIBotX.getIssuesURL())
-                        .toString()
+                Colors.CYAN + "Issues: " + Colors.GREEN + VIBotX.getIssuesURL()
         );
 
         /*
@@ -113,8 +88,7 @@ public final class VersionCheckCommand extends BaseCommand {
             }
             if (event.getChannel() != null) {
                 event.respondToChannel(msg);
-            }
-            else {
+            } else {
                 event.respondToUser(msg);
             }
         }

@@ -41,7 +41,6 @@ import net.visualillusionsent.vibotx.api.command.BotCommand;
 import net.visualillusionsent.vibotx.api.command.CommandCreationException;
 import net.visualillusionsent.vibotx.api.command.CommandEvent;
 import org.pircbotx.Channel;
-import org.pircbotx.User;
 
 import java.util.TimeZone;
 
@@ -62,8 +61,6 @@ import java.util.TimeZone;
         maxParam = 1
 )
 public final class TimeCommand extends BaseCommand {
-    private final String print = "The current time in TimeZone: '%s' is %s";
-
     public TimeCommand(VIBotX viBotX) throws CommandCreationException {
         super(viBotX);
     }
@@ -72,21 +69,17 @@ public final class TimeCommand extends BaseCommand {
     public final synchronized boolean execute(CommandEvent event) {
         long current = System.currentTimeMillis();
         Channel channel = event.getChannel();
-        User user = event.getUser();
         if (event.hasArguments()) {
             TimeZone zone = TimeZone.getTimeZone(event.getArguments()[0]);
             if (channel != null) {
-                event.respondToChannel(String.format(print, zone.getID(), DateUtils.longToTimeDate(current, zone), ""));
+                event.respondToChannel(String.format("The current time in TimeZone: '%s' is %s", zone.getID(), DateUtils.longToTimeDate(current, zone)));
+            } else {
+                event.respondToUser(String.format("The current time in TimeZone: '%s' is %s", zone.getID(), DateUtils.longToTimeDate(current, zone)));
             }
-            else {
-                event.respondToUser(String.format(print, zone.getID(), DateUtils.longToTimeDate(current, zone), ""));
-            }
-        }
-        else {
+        } else {
             if (channel != null) {
                 event.respondToChannel("My system time is: " + DateUtils.longToTimeDate(current));
-            }
-            else {
+            } else {
                 event.respondToUser("My system time is: " + DateUtils.longToTimeDate(current));
             }
         }

@@ -41,11 +41,11 @@ public final class BotOpsManager {
             FileUtils.cloneFileFromJar(JarUtils.getJarPath(VIBotX.class), "resources/example.ops", opsFile.getAbsolutePath());
         }
 
-        Scanner scan = null;
+        Scanner scan;
         try {
             scan = new Scanner(opsFile);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
+            return; // Well...
         }
 
         int linenum = 0;
@@ -57,8 +57,7 @@ public final class BotOpsManager {
             }
             try {
                 operators.add(new BotOperator(line));
-            }
-            catch (RuntimeException rex) {
+            } catch (RuntimeException rex) {
                 log.warning("Invalid HostMask in bot-ops.txt @ line: " + linenum);
             }
         }
@@ -69,9 +68,6 @@ public final class BotOpsManager {
     }
 
     public static boolean isBotOp(User user) {
-        if (operators.contains(new BotOperator(user.getNick(), user.getLogin(), user.getHostmask()))) {
-            return true;
-        }
-        return false;
+        return operators.contains(new BotOperator(user.getNick(), user.getLogin(), user.getHostmask()));
     }
 }

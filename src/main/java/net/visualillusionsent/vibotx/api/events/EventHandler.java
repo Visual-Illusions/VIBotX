@@ -48,7 +48,6 @@ import static net.visualillusionsent.vibotx.VIBotX.log;
 public final class EventHandler {
 
     private final ConcurrentHashMap<Class<? extends Event>, ArrayList<RegisteredEventListener>> regListeners = new ConcurrentHashMap<>();
-    private final String eherr = "Exception while passing Event: %s to EventListener: %s (Plugin: %s)";
 
     /* Initialization on Demand Holder idiom */
     // Private constructor prevents instantiation from other classes
@@ -97,8 +96,7 @@ public final class EventHandler {
                 public void execute(EventListener listener, Event event) throws EventHandlingException {
                     try {
                         method.invoke(listener, event);
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         throw new EventHandlingException(String.format(err, event.getClass().getSimpleName(), listener.getClass().getName()), ex.getCause());
                     }
                 }
@@ -109,10 +107,8 @@ public final class EventHandler {
     }
 
     public void unregisterPluginListeners(Plugin plugin) {
-        Iterator<ArrayList<RegisteredEventListener>> iter = regListeners.values().iterator();
-
-        while (iter.hasNext()) {
-            Iterator<RegisteredEventListener> regIterator = iter.next().iterator();
+        for (ArrayList<RegisteredEventListener> registeredEventListeners : regListeners.values()) {
+            Iterator<RegisteredEventListener> regIterator = registeredEventListeners.iterator();
 
             while (regIterator.hasNext()) {
                 RegisteredEventListener listener = regIterator.next();
@@ -124,16 +120,17 @@ public final class EventHandler {
         }
     }
 
-    /** Passes an event to the Plugin Event Listeners */
+    /**
+     * Passes an event to the Plugin Event Listeners
+     */
     public final void passEvent(Event event) {
         ArrayList<RegisteredEventListener> listeners = this.regListeners.get(event.getClass().asSubclass(Event.class));
         if (listeners != null) {
             for (RegisteredEventListener regEL : listeners) {
                 try {
                     regEL.execute(event);
-                }
-                catch (EventHandlingException ehex) {
-                    log.error(String.format(eherr, event.getClass().getSimpleName(), regEL.getClass().getSimpleName(), regEL.getPlugin().getName()), ehex.getCause());
+                } catch (EventHandlingException ehex) {
+                    log.error(String.format("Exception while passing Event: %s to EventListener: %s (Plugin: %s)", event.getClass().getSimpleName(), regEL.getClass().getSimpleName(), regEL.getPlugin().getName()), ehex.getCause());
                 }
             }
         }

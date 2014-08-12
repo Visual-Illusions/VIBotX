@@ -23,7 +23,7 @@ package net.visualillusionsent.vibotx.api.events;
  * Create a class that implements this interface to register what events to listens for.
  * Example:<br/>
  * <pre>
- *     @EventMethod
+ *     {@literal @EventMethod}
  *     public void listenToMessageEvent(MessageEvent event){
  *         //Your logic here
  *     }

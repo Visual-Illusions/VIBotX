@@ -139,7 +139,7 @@ public final class JavaPluginLoader {
         return mf;
     }
 
-    private JavaPlugin unsafeScanForPlugin(String name) {
+    private JavaPlugin unsafeScanForPlugin(String name) { //TODO: Fix always returning null
         File dir = new File(VIBotX.getUniverse(), "plugins/");
         if (!dir.isDirectory()) {
             return null;

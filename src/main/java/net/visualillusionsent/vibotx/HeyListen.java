@@ -34,7 +34,7 @@ import static net.visualillusionsent.vibotx.VIBotX.log;
  * @author Jason (darkdiplomat)
  */
 final class HeyListen extends ListenerAdapter<VIBotX> {
-    private final String logFormat(Channel chan, User user, String... args) {
+    private String logFormat(Channel chan, User user, String... args) {
         StringBuilder sBuild = new StringBuilder();
         if (chan != null) {
             sBuild.append('(').append(chan.getName()).append(") ");

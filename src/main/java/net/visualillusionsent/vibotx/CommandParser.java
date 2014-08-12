@@ -82,8 +82,7 @@ public final class CommandParser {
                     log.debug("Found Internal Command Class: " + cls.getSimpleName());
                     cls.getConstructor(VIBotX.class).newInstance(VIBotX.bot);
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 log.error("Failed to register internal commands...", ex);
             }
         }
@@ -94,7 +93,6 @@ public final class CommandParser {
      * If the instance is null, the method will create a new instance and initialize the internal {@link BaseCommand}s
      *
      * @return {@code CommandParser} instance
-     *
      * @see net.visualillusionsent.vibotx.command
      */
     public static CommandParser getInstance() {
@@ -106,23 +104,20 @@ public final class CommandParser {
     /**
      * Adds a {@link BaseCommand} to the server list.
      *
-     * @param cmd
-     *         the {@link BaseCommand} to add
+     * @param cmd the {@link BaseCommand} to add
      */
     public final void add(BaseCommand cmd) throws CommandCreationException {
         if (cmd != null) {
             if (!commands.containsKey(cmd.getName())) {
                 commands.put(cmd.getName(), cmd);
-            }
-            else {
+            } else {
                 throw new CommandCreationException("Command: '".concat(cmd.getName()).concat("' is already registered!"));
             }
             if (!cmd.getAliases()[0].equals(BotCommand.NULL)) {
                 for (String alias : cmd.getAliases()) {
                     if (!commands.containsKey(alias)) {
                         commands.put(alias, cmd);
-                    }
-                    else {
+                    } else {
                         log.warning("Command: '".concat(alias).concat("' is already registered!"));
                     }
                 }
@@ -134,12 +129,10 @@ public final class CommandParser {
      * Performs a lookup for a command of the given name and executes it if
      * found. Returns false if command not found.
      *
-     * @param event
-     *         the {@link CommandEvent}
-     *
+     * @param event the {@link CommandEvent}
      * @return {@code true} if is parsed successfully
      */
-    public static final ReturnStatus parseBotCommand(CommandEvent event) {
+    public static ReturnStatus parseBotCommand(CommandEvent event) {
         synchronized (lock) {
             BaseCommand cmd = getInstance().getCommand(event.getCommand());
 
@@ -180,8 +173,7 @@ public final class CommandParser {
                         return SUCCESS;
                     }
                     return FAILURE;
-                }
-                catch (Throwable thrown) {
+                } catch (Throwable thrown) {
                     log.error("Exception occurred while parsing Command: ".concat(event.getCommand()), thrown);
                     return ERROR;
                 }
@@ -193,24 +185,20 @@ public final class CommandParser {
     /**
      * Gets the {@link BaseCommand} by name from the commands map
      *
-     * @param command
-     *         the name of the {@link BaseCommand} to get
-     *
+     * @param command the name of the {@link BaseCommand} to get
      * @return the {@link BaseCommand} if found; {@code null} otherwise
      */
-    private final BaseCommand getCommand(String command) {
+    private BaseCommand getCommand(String command) {
         return commands.get(command);
     }
 
     /**
      * Prints out the help list to the {@link User} based on their status in the channel
      *
-     * @param channel
-     *         the {@link Channel} help is being called from
-     * @param user
-     *         the {@link User} calling for help
+     * @param channel the {@link Channel} help is being called from
+     * @param user    the {@link User} calling for help
      */
-    public static final void printHelp(Channel channel, User user, int pageStart) {
+    public static void printHelp(Channel channel, User user, int pageStart) {
         synchronized (lock) {
             user.send().notice("-- Help List for you in Channel: ".concat(channel.getName()).concat(" --"));
             int pageMax = getInstance().commands.values().size() / 10;
@@ -252,8 +240,7 @@ public final class CommandParser {
     /**
      * Removes all {@link BaseCommand}s associated with the {@link Plugin}
      *
-     * @param plugin
-     *         the {@link Plugin} to remove {@link BaseCommand}s for
+     * @param plugin the {@link Plugin} to remove {@link BaseCommand}s for
      */
     public final void removePluginCommands(Plugin plugin) {
         synchronized (lock) {

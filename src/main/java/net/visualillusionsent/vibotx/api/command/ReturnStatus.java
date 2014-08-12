@@ -24,5 +24,5 @@ public enum ReturnStatus {
     NOTCOMMAND,
     FAILURE,
     SUCCESS,
-    ERROR;
+    ERROR,;
 }

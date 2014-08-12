@@ -58,8 +58,7 @@ public final class ConfigurationManager {
         if (cfg.getBoolean("use.ssl")) {
             if (cfg.getBoolean("ssl.trustall")) {
                 cfgbuild.setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates());
-            }
-            else {
+            } else {
                 cfgbuild.setSocketFactory(SSLSocketFactory.getDefault());
             }
         }
@@ -68,8 +67,7 @@ public final class ConfigurationManager {
             if (chan.contains(":")) {
                 String[] chanKey = chan.split(":", 1);
                 cfgbuild.addAutoJoinChannel(chanKey[0], chanKey[1]);
-            }
-            else {
+            } else {
                 cfgbuild.addAutoJoinChannel(chan);
             }
         }
@@ -78,7 +76,7 @@ public final class ConfigurationManager {
         BotOpsManager.touch(universe);
     }
 
-    private static final void testForConfig(File universe) throws Exception {
+    private static void testForConfig(File universe) throws Exception {
         File cfg = new File(universe, "vibotx.cfg");
         if (!cfg.exists()) {
             FileUtils.cloneFileFromJar(JarUtils.getJarPath(VIBotX.class), "resources/default.cfg", cfg.getAbsolutePath());

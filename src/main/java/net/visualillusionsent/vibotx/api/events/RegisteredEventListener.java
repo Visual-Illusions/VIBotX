@@ -24,6 +24,7 @@
  */
 package net.visualillusionsent.vibotx.api.events;
 
+import net.visualillusionsent.vibotx.VIBotX;
 import net.visualillusionsent.vibotx.api.plugin.Plugin;
 import org.pircbotx.hooks.Event;
 
@@ -55,7 +56,7 @@ final class RegisteredEventListener {
         return dispatch;
     }
 
-    public final void execute(Event event) throws EventHandlingException {
+    public final void execute(Event<VIBotX> event) throws EventHandlingException {
         dispatch.execute(listener, event);
     }
 }

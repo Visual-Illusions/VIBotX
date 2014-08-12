@@ -64,14 +64,12 @@ public abstract class BaseCommand {
      * <p/>
      * Requires the {@code BaseCommand} to have the {@link BotCommand} annotation
      *
-     * @param plugin
-     *         the Plugin creating this command
+     * @param plugin the Plugin creating this command
      */
     public BaseCommand(Plugin plugin) throws CommandCreationException {
         if (!getClass().isAnnotationPresent(BotCommand.class)) {
             throw new CommandCreationException("BotCommand annotation not found!");
-        }
-        else {
+        } else {
             cmd = getClass().getAnnotation(BotCommand.class);
         }
         if (plugin == null) {
@@ -160,9 +158,7 @@ public abstract class BaseCommand {
     /**
      * Checks if the number of passed arguments is within the min/max range
      *
-     * @param paramCount
-     *         the number of passed arguments
-     *
+     * @param paramCount the number of passed arguments
      * @return {@code true} if in range; {@code false} if not
      */
     public boolean argumentsInRange(int paramCount) {
@@ -181,8 +177,7 @@ public abstract class BaseCommand {
     /**
      * Sends {@link User} a message about bad syntax
      *
-     * @param user
-     *         {@link User} using the command
+     * @param user {@link User} using the command
      */
     public void onBadSyntax(User user) {
         user.send().notice(cmd.usage());
@@ -191,8 +186,7 @@ public abstract class BaseCommand {
     /**
      * Executes a {@link BaseCommand}. Note: should not be called directly.<br>
      *
-     * @param event
-     *         the CommandEvent taking place
+     * @param event the CommandEvent taking place
      */
     abstract public boolean execute(CommandEvent event);
 
@@ -200,24 +194,21 @@ public abstract class BaseCommand {
      * String representation as BaseCommand[ClassName=%s Aliases=%s Usage=%s ErrorMessage=%s MinParams=%d MaxParams=%d RequireVoice=%b RequireOp=%b RequireBotOwner=%b] format
      *
      * @return formatted string
-     *
      * @see Object#toString()
      */
     @Override
     public final String toString() {
         try {
-            return String.format("BaseCommand[ClassName=%s Aliases=%s Usage=%s ErrorMessage=%s MinParams=%d MaxParams=%d RequireVoice=%b RequireOp=%b RequireBotOwner=%b]", this.getClass().getSimpleName(), StringUtils.joinString(cmd.aliases(), ",", 0), cmd.usage(), cmd.desc(), Integer.valueOf(cmd.minParam()), Integer.valueOf(cmd.maxParam()), Boolean.valueOf(cmd.voice()), Boolean.valueOf(cmd.op()), Boolean.valueOf(cmd.botOp()));
+            return String.format("BaseCommand[ClassName=%s Aliases=%s Usage=%s ErrorMessage=%s MinParams=%d MaxParams=%d RequireVoice=%b RequireOp=%b RequireBotOwner=%b]", this.getClass().getSimpleName(), StringUtils.joinString(cmd.aliases(), ",", 0), cmd.usage(), cmd.desc(), cmd.minParam(), cmd.maxParam(), cmd.voice(), cmd.op(), cmd.botOp());
+        } catch (UtilityException uex) {
+            return null;
         }
-        catch (UtilityException e) {
-        }
-        return null;
     }
 
     /**
      * Checks is an {@link Object} is equal to the {@code BaseCommand}
      *
      * @return {@code true} if equal; {@code false} otherwise
-     *
      * @see Object#equals(Object)
      */
     @Override
@@ -226,13 +217,7 @@ public abstract class BaseCommand {
             return false;
         }
         BaseCommand that = (BaseCommand) other;
-        if (cmd != that.cmd) {
-            return false;
-        }
-        if (plugin != null && !plugin.equals(that.getPlugin())) {
-            return false;
-        }
-        return true;
+        return cmd == that.cmd && plugin.equals(that.getPlugin());
     }
 
     /**

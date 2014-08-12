@@ -69,8 +69,7 @@ public final class VILogger extends Logger {
                 this.addHandler(new FileHandler("logs/global-log%g.log", 655360, 20, true)); //5Mb file size limit, 20 files max
                 this.addHandler(new FileHandler("logs/" + name + "/log%g.log", 655360, 5, true)); //5Mb file size limit, 5 files max
             }
-        }
-        catch (IOException ioex) {
+        } catch (IOException ioex) {
             // Shouldn't be any issues with this
         }
         for (Handler handler : this.getHandlers()) {
@@ -78,8 +77,7 @@ public final class VILogger extends Logger {
             handler.setFormatter(new BotLogFormat());
             try {
                 handler.setEncoding("UTF-8");
-            }
-            catch (UnsupportedEncodingException ueex) {
+            } catch (UnsupportedEncodingException ueex) {
                 // Shouldn't be any issues with this
             }
         }
@@ -88,8 +86,7 @@ public final class VILogger extends Logger {
             handler.setFormatter(new BotLogFormat());
             try {
                 handler.setEncoding("UTF-8");
-            }
-            catch (UnsupportedEncodingException ueex) {
+            } catch (UnsupportedEncodingException ueex) {
                 // Shouldn't be any issues with this
             }
         }
@@ -301,17 +298,15 @@ public final class VILogger extends Logger {
 
     @Override
     public void log(Level level, String msg, Throwable thrown) {
-        if (!checkLevelEnabled(level)) {
-            return;
+        if (checkLevelEnabled(level)) {
+            super.log(level, msg, thrown);
         }
-        super.log(level, msg, thrown);
     }
 
-    private final boolean checkLevelEnabled(Level level) {
+    private boolean checkLevelEnabled(Level level) {
         try {
             return log_levels_enabled.getBoolean(level.getName().toLowerCase().concat(".enabled"));
-        }
-        catch (UtilityException uex) {
+        } catch (UtilityException uex) {
             System.err.println("Missing Log Level Key for Level: '" + level.getName() + "'. Defaulting to allow logging....");
             return true;
         }
@@ -339,9 +334,7 @@ public final class VILogger extends Logger {
         /**
          * Formats the log output
          *
-         * @param rec
-         *         the {@link java.util.logging.LogRecord} to be formatted
-         *
+         * @param rec the {@link java.util.logging.LogRecord} to be formatted
          * @return formatted {@link java.util.logging.LogRecord} as a {@link String}
          */
         @Override

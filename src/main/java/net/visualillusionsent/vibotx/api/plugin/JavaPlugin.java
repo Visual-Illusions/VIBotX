@@ -60,8 +60,8 @@ public abstract class JavaPlugin implements Plugin {
                     status = "SNAPSHOT";
                 }
                 pChecker = new ProgramChecker(getName(), tempVersion, mf.getMainAttributes().getValue(STATUSURL.getValue()), status);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
+                //TODO
             }
         }
     }
@@ -145,7 +145,6 @@ public abstract class JavaPlugin implements Plugin {
      * Generated and stored in ../config/{pluginname}/{pluginname}.cfg
      *
      * @return {@code Plugin}'s {@link PropertiesFile}
-     *
      * @throws UtilityException
      */
     public final PropertiesFile getPluginConfiguration() throws UtilityException {
@@ -193,8 +192,7 @@ public abstract class JavaPlugin implements Plugin {
     final void closePlugin() {
         try {
             ((URLClassLoader) getClass().getClassLoader()).close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             //Oops
         }
         closed = true;

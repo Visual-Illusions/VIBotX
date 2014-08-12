@@ -27,8 +27,8 @@ import java.util.HashMap;
  * @author Jason (darkdiplomat)
  */
 public final class MuteTracker {
-    private static ArrayList<Channel> botMutedChans = new ArrayList<>();
-    private static HashMap<Channel, ArrayList<User>> muted_users = new HashMap<>();
+    private static final ArrayList<Channel> botMutedChans = new ArrayList<>();
+    private static final HashMap<Channel, ArrayList<User>> muted_users = new HashMap<>();
 
     public static boolean botMuteIn(Channel channel) {
         return botMutedChans.contains(channel);

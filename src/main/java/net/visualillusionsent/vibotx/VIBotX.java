@@ -64,8 +64,8 @@ public final class VIBotX extends PircBotX implements Plugin {
             if (!tempUni.exists()) {
                 tempUni = new File(".").getCanonicalFile();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
+            //TODO?
         }
         universe = tempUni;
         log = new VILogger("VIBotX");
@@ -95,8 +95,7 @@ public final class VIBotX extends PircBotX implements Plugin {
                 statusStr = "SNAPSHOT";
             }
             pCheck = new ProgramChecker("VIBotX", StringUtils.stringToLongArray(tempVersion, "."), getStatusURL(), ProgramStatus.fromString(statusStr));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.debug("Failed to initiation ProgramChecker", ex);
         }
         if (pCheck != null) {
@@ -113,12 +112,10 @@ public final class VIBotX extends PircBotX implements Plugin {
                 .addListener(new HeyListen());
         try {
             ConfigurationManager.loadConfig(universe, cfgbuild);
-        }
-        catch (FirstTimeRunException ftrex) {
+        } catch (FirstTimeRunException ftrex) {
             System.err.println("VIBotX is running for the first time and needs to be configured. Please configure VIBotX and relaunch.");
             System.exit(837);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.err.println("VIBotX was unable to read the configuration file...");
             ex.printStackTrace();
             System.exit(830);
@@ -164,8 +161,7 @@ public final class VIBotX extends PircBotX implements Plugin {
         }
         try {
             mf = JarUtils.getManifest(VIBotX.class);
-        }
-        catch (IOException ioex) {
+        } catch (IOException ioex) {
             mf = new Manifest();
         }
     }
@@ -174,8 +170,7 @@ public final class VIBotX extends PircBotX implements Plugin {
         if (mf.getMainAttributes().containsKey(STATUSURL.getValue())) {
             try {
                 return new URL(mf.getMainAttributes().getValue(STATUSURL.getValue()));
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 log.error("There was a bug that has caused a MalformedURLException when checking the VIBotX Status." +
                         "Verify your VIBotX build is good or report this error.");
             }

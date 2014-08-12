@@ -57,9 +57,8 @@ public final class HelpCommand extends BaseCommand {
         if (event.hasArguments()) {
             try {
                 pageStart = Integer.parseInt(event.getArgument(0));
-            }
-            catch (NumberFormatException nfex) {
-
+            } catch (NumberFormatException nfex) {
+                // no change
             }
         }
         CommandParser.printHelp(event.getChannel(), event.getUser(), pageStart);
