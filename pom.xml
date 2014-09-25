@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jnks.build>0</jnks.build>
-        <viutils.version>1.3.0</viutils.version>
+        <viutils.version>1.4.0-SNAPSHOT</viutils.version>
         <pircbotx.version>2.0.1</pircbotx.version>
         <devs>darkdiplomat</devs>
         <status.url>http://status.visualillusionsent.net</status.url>
@@ -62,7 +62,7 @@
         <repository>
             <id>vi-repo</id>
             <name>Visual Illusions Repository</name>
-            <url>http://repo.visualillusionsent.net/</url>
+            <url>http://repo.visualillusionsent.net/repository/public</url>
         </repository>
     </repositories>
     <dependencies>
