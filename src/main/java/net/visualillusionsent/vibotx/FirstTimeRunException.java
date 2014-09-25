@@ -24,4 +24,8 @@ package net.visualillusionsent.vibotx;
  * @author Jason (darkdiplomat)
  */
 public class FirstTimeRunException extends Exception {
+
+    public FirstTimeRunException() {
+        super("VIBotX is running for the first time and needs to be configured. Please configure VIBotX and relaunch.");
+    }
 }

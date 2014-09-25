@@ -24,6 +24,7 @@ import org.pircbotx.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -38,7 +39,11 @@ public final class BotOpsManager {
     private static void loadOps(File universe) {
         File opsFile = new File(universe, "bot-ops.txt");
         if (!opsFile.exists()) {
-            FileUtils.cloneFileFromJar(JarUtils.getJarPath(VIBotX.class), "resources/example.ops", opsFile.getAbsolutePath());
+            try {
+                FileUtils.cloneFileFromJar(JarUtils.getJarPath(VIBotX.class), "resources/example.ops", opsFile.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         Scanner scan;

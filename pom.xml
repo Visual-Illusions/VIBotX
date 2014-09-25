@@ -72,7 +72,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-        <groupId>org.pircbotx</groupId>
+            <groupId>org.pircbotx</groupId>
             <artifactId>pircbotx</artifactId>
             <scope>compile</scope>
         </dependency>

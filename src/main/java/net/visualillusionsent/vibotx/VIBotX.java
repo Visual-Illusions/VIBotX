@@ -28,20 +28,18 @@ import net.visualillusionsent.vibotx.configuration.ConfigurationManager;
 import net.visualillusionsent.vibotx.logging.VILogger;
 import org.pircbotx.Colors;
 import org.pircbotx.Configuration;
+import org.pircbotx.IdentServer;
 import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
 
-import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.DEVELOPERS;
-import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.ISSUESURL;
-import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.JENKINSBUILD;
-import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.STATUSURL;
-import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.WEBSITEURL;
+import static net.visualillusionsent.vibotx.api.plugin.PluginManifestAttributes.*;
 
 /**
  * VIBotX - The Visual Illusions IRC Bot
@@ -85,6 +83,14 @@ public final class VIBotX extends PircBotX implements Plugin {
     }
 
     public static void main(String[] args) {
+        if (System.console() == null && !GraphicsEnvironment.isHeadless()) { // Check if we just double clicked the jar to run it...
+            /* //TODO: WIP
+            // Create a Console
+            BotConsoleGUI.createAndShowGUI();
+            */
+            System.exit(1);
+            return; // just in case
+        }
         log.info("VIBotX - Visual Illusions IRC Bot is starting...");
         pokeManifest();
         try {
@@ -105,7 +111,7 @@ public final class VIBotX extends PircBotX implements Plugin {
             }
         }
 
-        Configuration.Builder<VIBotX> cfgbuild = new Configuration.Builder()
+        Configuration.Builder<VIBotX> cfgbuild = new Configuration.Builder<VIBotX>()
                 .setVersion("VIBotX " + getVersionStatic() + ", Visual Illusions IRC Bot")
                 .setRealName("VIBotX " + getVersionStatic() + ", Visual Illusions IRC Bot")
                 .setShutdownHookEnabled(true)
@@ -113,12 +119,21 @@ public final class VIBotX extends PircBotX implements Plugin {
         try {
             ConfigurationManager.loadConfig(universe, cfgbuild);
         } catch (FirstTimeRunException ftrex) {
-            System.err.println("VIBotX is running for the first time and needs to be configured. Please configure VIBotX and relaunch.");
+            System.err.println(ftrex.getMessage());
             System.exit(837);
         } catch (Exception ex) {
             System.err.println("VIBotX was unable to read the configuration file...");
             ex.printStackTrace();
             System.exit(830);
+        }
+
+        if (cfgbuild.isIdentServerEnabled()) {
+            try {
+                IdentServer.startServer(); // Need to boot this up in order to use it...
+            } catch (RuntimeException rtex) {
+                log.error("An error occurred with the IdentServer. IdentServer will not be in use", rtex);
+                cfgbuild.setIdentServerEnabled(false); // If we don't set it to false, it errors again at bot.connect
+            }
         }
 
         bot = new VIBotX(cfgbuild.buildConfiguration());
