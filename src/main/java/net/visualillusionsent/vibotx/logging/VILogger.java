@@ -17,26 +17,13 @@
  */
 package net.visualillusionsent.vibotx.logging;
 
-import net.visualillusionsent.utils.FileUtils;
-import net.visualillusionsent.utils.JarUtils;
-import net.visualillusionsent.utils.SystemUtils;
-import net.visualillusionsent.utils.UnmodifiablePropertiesFile;
-import net.visualillusionsent.utils.UtilityException;
+import net.visualillusionsent.utils.*;
 import net.visualillusionsent.vibotx.VIBotX;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
+import java.util.logging.*;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import static net.visualillusionsent.vibotx.logging.Level.*;
 
@@ -51,7 +38,11 @@ public final class VILogger extends Logger {
     static {
         File log_props = new File(VIBotX.getUniverse(), "log_levels.cfg");
         if (!log_props.exists()) {
-            FileUtils.cloneFileFromJar(JarUtils.getJarPath(VILogger.class), "resources/default_log_levels.cfg", "log_levels.cfg");
+            try {
+                FileUtils.cloneFileFromJar(JarUtils.getJarPath(VILogger.class), "resources/default_log_levels.cfg", "log_levels.cfg");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         log_levels_enabled = new UnmodifiablePropertiesFile(VIBotX.getUniverse().getAbsolutePath().concat("/log_levels.cfg"));
     }
